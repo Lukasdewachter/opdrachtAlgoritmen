@@ -24,9 +24,18 @@ public class Draw extends JComponent{
         g2d.setRenderingHints(rh);
         c.drawCrane(g2d);
         Ellipse2D.Double e = new Ellipse2D.Double(200,200,8,8);
-        AffineTransform af = g2d.getTransform(); //terug naar originele transformatie
+        AffineTransform reset = g2d.getTransform(); //terug naar originele transformatie
         g2d.translate(300,0);
+        g2d.setTransform(reset);
         g2d.fill(e);
+
+        Rectangle2D.Double rect = new Rectangle2D.Double(300,250,40,80);
+        g2d.setColor(Color.GREEN); //roteert wel
+        g2d.rotate(Math.toRadians(20),300,150);
+        g2d.fill(rect);
+        g2d.setColor(Color.BLACK); //roteert niet
+        g2d.setTransform(reset);
+        g2d.fill(rect);
 
 
     }
