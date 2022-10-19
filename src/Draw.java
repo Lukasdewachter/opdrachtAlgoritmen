@@ -1,15 +1,20 @@
 import java.awt.*;
 import java.awt.geom.*;
+import java.util.Scanner;
 import javax.swing.*;
 
 public class Draw extends JComponent{
     private int w;
     private int h;
+    private Crane c;
     public Draw(int w, int h){
         this.w=w;
         this.h=h;
+        c = new Crane(200,50);
     }
+    @Override
     protected void paintComponent(Graphics g) {
+        Scanner sc = new Scanner(System.in);
         Graphics2D g2d = (Graphics2D) g;
 
         RenderingHints rh = new RenderingHints(
@@ -17,14 +22,12 @@ public class Draw extends JComponent{
                 RenderingHints.VALUE_ANTIALIAS_ON
         );
         g2d.setRenderingHints(rh);
-        Rectangle2D.Double r = new Rectangle2D.Double(50,50,540,380);
-        g2d.setColor(new Color(100,149,237));
-        g2d.fill(r);
-        Line2D.Double l = new Line2D.Double(100,200,200,100);
-        g2d.setColor(new Color(2,1,1));
-        g2d.draw(l);
+        c.drawCrane(g2d);
         Ellipse2D.Double e = new Ellipse2D.Double(200,200,8,8);
+        AffineTransform af = g2d.getTransform(); //terug naar originele transformatie
+        g2d.translate(300,0);
         g2d.fill(e);
+
 
     }
 }
