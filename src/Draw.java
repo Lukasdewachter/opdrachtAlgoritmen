@@ -24,6 +24,7 @@ public class Draw extends JComponent implements ActionListener {
     }
     @Override
     protected void paintComponent(Graphics g) {
+        System.out.println("input: x y velX velY");
         Scanner sc = new Scanner(System.in);
         this.x = sc.nextDouble();
         this.y = sc.nextDouble();
