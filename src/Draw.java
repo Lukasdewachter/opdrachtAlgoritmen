@@ -5,6 +5,15 @@ import java.awt.geom.*;
 import java.util.Scanner;
 import javax.swing.*;
 
+
+/*
+*
+*
+* Wordt enkel nog gebruikt om dingen uit te kopiëren
+* 
+*
+*
+* */
 public class Draw extends JComponent implements ActionListener {
     Timer t = new Timer(0, this);
     private int w;

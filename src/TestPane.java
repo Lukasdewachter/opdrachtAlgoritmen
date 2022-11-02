@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 class TestPane extends JPanel {
-    int x = 0,y = 100,radius = 20,xDelta = 10;
+    int x = 0,y = 100,radius = 20,xDelta = 5;
 
     public TestPane() {
         Timer timer = new Timer(40, new ActionListener() {
@@ -31,8 +31,14 @@ class TestPane extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
         super.paintComponent(g);
-        g.setColor(Color.BLACK);
-        g.fillOval(x, y - radius, radius * 2, radius * 2);
+        g2d.setColor(Color.BLACK);
+        g2d.fillOval(x, y - radius, radius * 2, radius * 2);
+        RenderingHints rh = new RenderingHints(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
+        );
+        g2d.setRenderingHints(rh);
     }
 }
