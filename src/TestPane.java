@@ -4,19 +4,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 class TestPane extends JPanel {
-    int x = 0,y = 100,radius = 20,xDelta = 5;
+    int x = 0,y = 0,radius = 20,xDelta = 5, yDelta =4;
 
     public TestPane() {
         Timer timer = new Timer(40, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 x += xDelta;
+                y += yDelta;
                 if (x + (radius * 2) > getWidth()) {
                     x = getWidth() - (radius * 2);
                     xDelta *= -1;
                 } else if (x < 0) {
                     x = 0;
                     xDelta *= -1;
+                }
+                if (y + (radius * 2) > getWidth()) {
+                    y = getWidth() - (radius * 2);
+                    yDelta *= -1;
+                } else if (y < 0) {
+                    y = 0;
+                    yDelta *= -1;
                 }
                 repaint();
             }
