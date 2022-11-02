@@ -18,6 +18,7 @@ class TestPane extends JPanel {
                 } else if (x < 0) {
                     x = 0;
                     xDelta *= -1;
+
                 }
                 if (y + (radius * 2) > getWidth()) {
                     y = getWidth() - (radius * 2);
