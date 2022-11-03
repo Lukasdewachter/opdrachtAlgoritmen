@@ -25,45 +25,44 @@ class TestPane extends JPanel {
                 yHead = crane.getYHead();
                 double row = (yHead-5)/50;
                 double collumn = x/100;
-                if(collumn != trajectory.getX()){
-                    if(collumn < trajectory.getX()){
-                        if(x + trajectory.getVx() > trajectory.getX()*100){
-                            x = trajectory.getX()*100;
-                        }else{
-                            x+=trajectory.getVx();
-                        }
-                    }
-                    else {
-                        if(x - trajectory.getVx() < trajectory.getX()*100){
-                            x = trajectory.getX()*100;
-                        }else {
-                            x-=trajectory.getVx();
-                        }
-                    }
-                    crane.setX(x);
-                    repaint();
-                }else{
-                    if(row != trajectory.getY()){
-                        if(row < trajectory.getY()){
-                            if(row*50 + trajectory.getVy() > trajectory.getY()*50){
-                                yHead = (trajectory.getY()*50)+5;
-                            }else{
-                                yHead+=trajectory.getVy();
+                if(collumn != trajectory.getX() || row != trajectory.getY()) {
+                    if (collumn != trajectory.getX()) {
+                        if (collumn < trajectory.getX()) {
+                            if (x + trajectory.getVx() > trajectory.getX() * 100) {
+                                x = trajectory.getX() * 100;
+                            } else {
+                                x += trajectory.getVx();
+                            }
+                        } else {
+                            if (x - trajectory.getVx() < trajectory.getX() * 100) {
+                                x = trajectory.getX() * 100;
+                            } else {
+                                x -= trajectory.getVx();
                             }
                         }
-                        else {
-                            if(row*50 - trajectory.getVy() < trajectory.getY()*50){
-                                yHead = (trajectory.getY()*50)+5;
-                            }else{
-                                yHead-=trajectory.getVy();
+                        crane.setX(x);
+                    }
+                    if (row != trajectory.getY()) {
+                        if (row < trajectory.getY()) {
+                            if (row * 50 + trajectory.getVy() > trajectory.getY() * 50) {
+                                yHead = (trajectory.getY() * 50) + 5;
+                            } else {
+                                yHead += trajectory.getVy();
+                            }
+                        } else {
+                            if (row * 50 - trajectory.getVy() < trajectory.getY() * 50) {
+                                yHead = (trajectory.getY() * 50) + 5;
+                            } else {
+                                yHead -= trajectory.getVy();
                             }
                         }
                         crane.setYHead(yHead);
-                        repaint();
-                    }else {
+                    }
+                }
+                    else{
                         if (count<4){
                             try {
-                                Thread.sleep(2000);
+                                Thread.sleep(1200);
                             } catch (InterruptedException ex) {
                                 throw new RuntimeException(ex);
                             }
@@ -71,7 +70,7 @@ class TestPane extends JPanel {
                             trajectory = trajectories.get(count);
                         }else ready=true;
                     }
-                }
+                    repaint();
             }
         });
         timer.start();
