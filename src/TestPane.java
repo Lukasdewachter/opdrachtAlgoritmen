@@ -12,12 +12,13 @@ class TestPane extends JPanel {
     private Crane crane;
     List<Trajectory> trajectories;
     Trajectory trajectory;
-    double x = 500,y = 50,xDelta = 5, yDelta = 4, xEnd = 150, yEnd = 150, yHead;
+    double x = 500,y = 50,xDelta = 0, yDelta = 0, xEnd = 0, yEnd=0 , yHead;
     int count = 0;
     public TestPane(List<Trajectory>t) {
         this.trajectories=t;
         crane = new Crane(50,200,x,y, y);
         trajectory = trajectories.get(count);
+        loadTrajectory();
         Timer timer = new Timer(40, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -25,52 +26,53 @@ class TestPane extends JPanel {
                 yHead = crane.getYHead();
                 double row = (yHead-5)/50;
                 double collumn = x/100;
-                if(collumn != trajectory.getX() || row != trajectory.getY()) {
-                    if (collumn != trajectory.getX()) {
-                        if (collumn < trajectory.getX()) {
-                            if (x + trajectory.getVx() > trajectory.getX() * 100) {
-                                x = trajectory.getX() * 100;
+                if(collumn != xEnd || row != yEnd) {
+                    if (collumn != xEnd) {
+                        if (collumn < xEnd) {
+                            if (x +xDelta >xEnd * 100) {
+                                x = xEnd * 100;
                             } else {
-                                x += trajectory.getVx();
+                                x += xDelta;
                             }
                         } else {
-                            if (x - trajectory.getVx() < trajectory.getX() * 100) {
-                                x = trajectory.getX() * 100;
+                            if (x - xDelta < xEnd * 100) {
+                                x = xEnd * 100;
                             } else {
-                                x -= trajectory.getVx();
+                                x -= xDelta;
                             }
                         }
                         crane.setX(x);
                     }
-                    if (row != trajectory.getY()) {
-                        if (row < trajectory.getY()) {
-                            if (row * 50 + trajectory.getVy() > trajectory.getY() * 50) {
-                                yHead = (trajectory.getY() * 50) + 5;
+                    if (row != yEnd) {
+                        if (row < yEnd) {
+                            if (row * 50 + yDelta > yEnd * 50) {
+                                yHead = (yEnd * 50) + 5;
                             } else {
-                                yHead += trajectory.getVy();
+                                yHead += yDelta;
                             }
                         } else {
-                            if (row * 50 - trajectory.getVy() < trajectory.getY() * 50) {
-                                yHead = (trajectory.getY() * 50) + 5;
+                            if (row * 50 - yDelta < yEnd * 50) {
+                                yHead = (yEnd * 50) + 5;
                             } else {
-                                yHead -= trajectory.getVy();
+                                yHead -= yDelta;
                             }
                         }
                         crane.setYHead(yHead);
                     }
+                }else{
+                    if (count<4){
+                        try {
+                            Thread.sleep(1200);
+                        } catch (InterruptedException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        count ++;
+                        trajectory = trajectories.get(count);
+                        loadTrajectory();
+
+                    }else ready=true;
                 }
-                    else{
-                        if (count<4){
-                            try {
-                                Thread.sleep(1200);
-                            } catch (InterruptedException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                            count ++;
-                            trajectory = trajectories.get(count);
-                        }else ready=true;
-                    }
-                    repaint();
+                repaint();
             }
         });
         timer.start();
@@ -86,6 +88,12 @@ class TestPane extends JPanel {
         });
         stopThread.start();
     }
+    public void loadTrajectory(){
+        xEnd = trajectory.getX();
+        yEnd = trajectory.getY();
+        xDelta = trajectory.getVx();
+        yDelta = trajectory.getVy();
+    }
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(1200, 300);
@@ -97,9 +105,9 @@ class TestPane extends JPanel {
         super.paintComponent(g);
         g.setColor(getBackground());
         g2d.setColor(Color.BLACK);
-        g2d.drawString("Current task: C:"+Integer.toString((int)trajectory.getX())+"   R: "+Integer.toString((int)trajectory
-                .getY())+"      Speed X:"+Integer.toString((int)trajectory.getVx())+"  Y: "+Integer.toString((int)trajectory.getVy()),500,10);
-        g2d.drawString("Crane X: "+Double.toString(x-100)+" Y: "+Double.toString(yHead-55), 600,30);
+        g2d.drawString("Current task: C:"+Integer.toString((int)xEnd)+"   R: "+Integer.toString((int)yEnd)+" " +
+                "     Speed X:"+Integer.toString((int)xDelta)+"  Y: "+Integer.toString((int)yDelta),500,10);
+        g2d.drawString("Crane X: "+Double.toString(x-100)+" Y: "+Double.toString(yHead-55), 500,30);
         for(int i=1 ; i<6; i++){
             int multiplier = 50*i;
             g2d.drawLine(100,multiplier,1100,multiplier);
