@@ -4,42 +4,71 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Scanner;
+import java.util.List;
 class TestPane extends JPanel {
     Boolean ready = false;
     private Crane crane;
-    double x = 100,y = 50,xDelta = 5, yDelta = 4, xEnd = 150, yEnd = 150, input, yHead;
-    public TestPane(double inputX, double inputY) {
-        this.input = inputX;
-        crane = new Crane(50,200,x,y);
+    List<Trajectory> trajectories;
+    Trajectory trajectory;
+    double x = 500,y = 50,xDelta = 5, yDelta = 4, xEnd = 150, yEnd = 150, yHead;
+    int count = 0;
+    public TestPane(List<Trajectory>t) {
+        this.trajectories=t;
+        crane = new Crane(50,200,x,y, y);
+        trajectory = trajectories.get(count);
         Timer timer = new Timer(40, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ex) {
-                    throw new RuntimeException(ex);
-                }
                 x = crane.getX();
                 yHead = crane.getYHead();
                 double row = (yHead-5)/50;
                 double collumn = x/100;
-                if(collumn != inputX){
-                    if(collumn < inputX){
-                        x+=100;
+                if(collumn != trajectory.getX()){
+                    if(collumn < trajectory.getX()){
+                        if(x + trajectory.getVx() > trajectory.getX()*100){
+                            x = trajectory.getX()*100;
+                        }else{
+                            x+=trajectory.getVx();
+                        }
                     }
-                    else x-=100;
+                    else {
+                        if(x - trajectory.getVx() < trajectory.getX()*100){
+                            x = trajectory.getX()*100;
+                        }else {
+                            x-=trajectory.getVx();
+                        }
+                    }
                     crane.setX(x);
                     repaint();
                 }else{
-                    if(row != inputY){
-                        if(row < inputY){
-                            yHead+=50;
+                    if(row != trajectory.getY()){
+                        if(row < trajectory.getY()){
+                            if(row*50 + trajectory.getVy() > trajectory.getY()*50){
+                                yHead = (trajectory.getY()*50)+5;
+                            }else{
+                                yHead+=trajectory.getVy();
+                            }
                         }
-                        else yHead-=50;
+                        else {
+                            if(row*50 - trajectory.getVy() < trajectory.getY()*50){
+                                yHead = (trajectory.getY()*50)+5;
+                            }else{
+                                yHead-=trajectory.getVy();
+                            }
+                        }
                         crane.setYHead(yHead);
                         repaint();
-                    }else ready=true;
+                    }else {
+                        if (count<4){
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            count ++;
+                            trajectory = trajectories.get(count);
+                        }else ready=true;
+                    }
                 }
             }
         });

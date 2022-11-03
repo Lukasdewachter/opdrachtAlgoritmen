@@ -7,12 +7,12 @@ public class Crane {
     private double x;
     private double y;
     private double yHead;
-    public Crane(int width, int height, double x, double y){
+    public Crane(int width, int height, double x, double y, double yHead){
         this.width = width;
         this.height = height;
         this.x=x;
         this.y=y;
-        yHead = y+5;
+        this.yHead = yHead + 5;
     }
 
     public double getX() {
