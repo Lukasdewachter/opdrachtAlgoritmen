@@ -6,6 +6,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 class TestPane extends JPanel {
+    public Graphics2D g2d;
+    String text;
     Boolean ready = false;
     private Crane crane;
     List<Trajectory> trajectories;
@@ -85,7 +87,6 @@ class TestPane extends JPanel {
         });
         stopThread.start();
     }
-
     @Override
     public Dimension getPreferredSize() {
         return new Dimension(1200, 300);
@@ -93,10 +94,13 @@ class TestPane extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
+        g2d = (Graphics2D) g;
         super.paintComponent(g);
         g.setColor(getBackground());
         g2d.setColor(Color.BLACK);
+        g2d.drawString("Current task: C:"+Integer.toString((int)trajectory.getX())+"   R: "+Integer.toString((int)trajectory
+                .getY())+"      Speed X:"+Integer.toString((int)trajectory.getVx())+"  Y: "+Integer.toString((int)trajectory.getVy()),500,10);
+        g2d.drawString("Crane X: "+Double.toString(x-100)+" Y: "+Double.toString(yHead-55), 600,30);
         for(int i=1 ; i<6; i++){
             int multiplier = 50*i;
             g2d.drawLine(100,multiplier,1100,multiplier);
@@ -107,6 +111,7 @@ class TestPane extends JPanel {
         }
         g2d.setColor(Color.RED);
         crane.drawCrane(g2d);
+        TextArea text = new TextArea();
         RenderingHints rh = new RenderingHints(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON

@@ -11,14 +11,11 @@ public class Main {
         List<Trajectory> list = new ArrayList<Trajectory>();
         int[] x = {10,5,3,6,1};
         int[] y = {1,4,1,4,1};
-        int[] Vx = {4,5,4,5,1};
-        int[] Vy = {4,4,3,5,1};
+        int[] Vx = {10,5,20,5,1};
+        int[] Vy = {10,5,20,5,1};
         for(int i=0; i<5;i++){
             Trajectory trajectory = new Trajectory(x[i], y[i], Vx[i], Vy[i]);
             list.add(trajectory);
-        }
-        for(Trajectory t : list){
-            System.out.println(list.indexOf(t)+" "+ t.getX()+" "+t.getY());
         }
         frame.setVisible(true);
         frame.add(new TestPane(list));
