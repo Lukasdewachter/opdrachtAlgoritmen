@@ -12,7 +12,7 @@ public class Main {
         int[] x = {10,5,3,6,1};
         int[] y = {1,4,1,4,1};
         int[] Vx = {10,5,20,5,1};
-        int[] Vy = {10,5,20,5,1};
+        int[] Vy = {5,2,10,2,1};
         for(int i=0; i<5;i++){
             Trajectory trajectory = new Trajectory(x[i], y[i], Vx[i], Vy[i]);
             list.add(trajectory);

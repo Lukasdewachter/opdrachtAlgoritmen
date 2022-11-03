@@ -19,7 +19,7 @@ class TestPane extends JPanel {
         crane = new Crane(50,200,x,y, y);
         trajectory = trajectories.get(count);
         loadTrajectory();
-        Timer timer = new Timer(40, new ActionListener() {
+        Timer timer = new Timer(10, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 x = crane.getX();
