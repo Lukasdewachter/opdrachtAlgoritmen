@@ -4,6 +4,7 @@ import java.awt.geom.*;
 public class Crane {
     private int width, height,craneNr;
     private double  x,y,yHead;
+    Color body, head;
     public Crane(int width, int height, double x, double y, int craneNr){
         this.width = width;
         this.height = height;
@@ -11,10 +12,16 @@ public class Crane {
         this.y=y;
         this.yHead = y + 5;
         this.craneNr = craneNr;
+        body = new Color(109, 128, 161);
+        head = new Color(100,149,237);
+
     }
 
     public double getX() {
         return x;
+    }
+    public void setColor(Color correct){
+        this.head = correct;
     }
 
     public double getY() {
@@ -79,10 +86,10 @@ public class Crane {
 
     public void drawCrane(Graphics2D g2d){
         Rectangle2D.Double r = new Rectangle2D.Double(x+25,y,width,height);
-        g2d.setColor(new Color(109, 128, 161));
+        g2d.setColor(body);
         g2d.fill(r);
         Rectangle2D.Double l = new Rectangle2D.Double(x+18.75,yHead,width*1.25,height*0.2);
-        g2d.setColor(new Color(100,149,237));
+        g2d.setColor(head);
         g2d.fill(l);
         g2d.setColor(Color.BLACK);
         g2d.drawString("Crane "+(craneNr+1)+": "+Double.toString(x-100)+" Y: "+Double.toString(yHead-55), 100+500*craneNr,30);

@@ -2,7 +2,6 @@
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
@@ -15,8 +14,8 @@ public class Main {
         int[] Vy = {5,2,3,2,1};
         int[] x2 = {8,6,7,10,5};
         int[] y2 = {1,3,1,4,2};
-        int[] Vx2 = {10,5,8,5,1};
-        int[] Vy2 = {5,2,3,2,1};
+        int[] Vx2 = {5,5,8,3,1};
+        int[] Vy2 = {1,2,2,2,1};
         for(int i=0; i<5;i++){
             Trajectory trajectory = new Trajectory(x[i], y[i], Vx[i], Vy[i]);
             Trajectory trajectory2 = new Trajectory(x2[i],y2[i],Vx2[i], Vy2[i]);

@@ -6,7 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 class TestPane extends JPanel {
     public Graphics2D g2d;
-    private Boolean ready = false;
+    private Color normal, correct;
     private Crane crane;
     private Crane crane2;
     List<Trajectory> trajectories1, trajectories2;
@@ -14,18 +14,25 @@ class TestPane extends JPanel {
     double x1 = 500, y1 = 50, xDelta1 = 0, yDelta1 = 0, xEnd1 = 0, yEnd1 =0;
     double x2 = 900, y2 = 50, xDelta2 = 0, yDelta2 = 0, xEnd2 = 0, yEnd2 =0;
     int count1 = 0,count2=0;
+    int time =0;
+    private Timer timer;
+    private Boolean c1 = false, c2 = false;
+    ActionListener al;
     public TestPane(List<Trajectory>t1,List<Trajectory>t2 ) {
         this.trajectories1 =t1;
         this.trajectories2 = t2;
+        correct = new Color(46, 255, 0);
+        normal = new Color(100,149,237);
         crane = new Crane(50,200, x1, y1,0);
         crane2 = new Crane(50,200,x2,y2,1);
         trajectory1 = trajectories1.get(count1);
         trajectory2 = trajectories2.get(count2);
         loadTrajectory1();
         loadTrajectory2();
-        Timer timer = new Timer(10, new ActionListener() {
+        al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                time ++;
                 if(crane.moveCrane(xEnd1, yEnd1, xDelta1, yDelta1)) {
                     if (count1 < 4) {
                         try {
@@ -36,7 +43,10 @@ class TestPane extends JPanel {
                         count1++;
                         trajectory1 = trajectories1.get(count1);
                         loadTrajectory1();
-                    } else ready = true;
+                    } else {
+                        c1 = true;
+                        setReady();
+                    }
                 }
                 if(crane2.moveCrane(xEnd2, yEnd2, xDelta2, yDelta2)) {
                     if (count2 < 4) {
@@ -48,12 +58,21 @@ class TestPane extends JPanel {
                         count2++;
                         trajectory2 = trajectories2.get(count2);
                         loadTrajectory2();
-                    } else ready = true;
+                    } else {
+                        c2=true;
+                        setReady();
+                    }
                 }
                 repaint();
-                }
-        });
+            }
+        };
+        timer = new Timer(10,al);
         timer.start();
+    }
+    public void setReady(){
+        if(c1 && c2){
+            timer.stop();
+        }
     }
     public void loadTrajectory1(){
         xEnd1 = trajectory1.getX();
@@ -80,6 +99,7 @@ class TestPane extends JPanel {
         Rectangle2D rect = new Rectangle2D.Double(500,50,200,200);
         g2d.fill(rect);
         g.setColor(Color.black);
+        g2d.drawString("Time: "+time,550,265);
         g2d.drawString("Current task 1: C:"+Integer.toString((int) xEnd1)+"   R: "+Integer.toString((int) yEnd1)+" " +
                 "     Speed X:"+Integer.toString((int) xDelta1)+"  Y: "+Integer.toString((int) yDelta1),100,10);
         g2d.drawString("Current task 2: C:"+Integer.toString((int) xEnd2)+"   R: "+Integer.toString((int) yEnd2)+" " +
