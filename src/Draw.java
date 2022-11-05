@@ -29,7 +29,6 @@ public class Draw extends JComponent implements ActionListener {
     public Draw(int w, int h){
         this.w=w;
         this.h=h;
-        c = new Crane(50,200, 1,1, 50);
         x=0;
         y=0;
         this.newX=0;
