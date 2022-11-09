@@ -1,7 +1,11 @@
 //from www.java2s.com
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+/*
+    - Transformeren naar andere layouts
+*/
 public class Main {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
@@ -22,6 +26,22 @@ public class Main {
             list.add(trajectory);
             list2.add(trajectory2);
         }
+        List<Slot> slots1 = new ArrayList<>();
+        List<Slot> slots2 = new ArrayList<>();
+        List<Slot> slots3 = new ArrayList<>();
+        List<Slot> slots4 = new ArrayList<>();
+        Slot s1 = new Slot(0,0);
+        slots1.add(s1);
+        Slot s2 = new Slot(0,1);
+        slots2.add(s2);
+        Slot s3 = new Slot(0,2);
+        slots3.add(s1);
+        slots3.add(s2);
+        slots4.add(s3);
+        Container c1 = new Container(1,1,slots1);
+        Container c2 = new Container(2,1,slots2);
+        Container c3 = new Container(3,2,slots3);
+        Container c4 = new Container(4,1,slots4);
         frame.setVisible(true);
         frame.add(new TestPane(list, list2));
         frame.pack();
