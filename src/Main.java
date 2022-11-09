@@ -12,11 +12,11 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         List<Trajectory> list = new ArrayList<Trajectory>();
         List<Trajectory> list2 = new ArrayList<Trajectory>();
-        int[] x = {6,5,3,6,1};
+        int[] x = {6,5,5,6,1};
         int[] y = {1,3,1,4,2};
         int[] Vx = {10,5,8,5,1};
         int[] Vy = {5,2,3,2,1};
-        int[] x2 = {8,6,7,10,5};
+        int[] x2 = {8,4,2,10,5};
         int[] y2 = {1,3,1,4,2};
         int[] Vx2 = {5,5,8,3,1};
         int[] Vy2 = {1,2,2,2,1};

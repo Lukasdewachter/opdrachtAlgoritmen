@@ -14,6 +14,8 @@ class TestPane extends JPanel {
     Trajectory trajectory1, trajectory2;
     double x1 = 500, y1 = 50, xDelta1 = 0, yDelta1 = 0, xEnd1 = 0, yEnd1 =0;
     double x2 = 900, y2 = 50, xDelta2 = 0, yDelta2 = 0, xEnd2 = 0, yEnd2 =0;
+    double xMax=0, xMax2=5;
+    double xMin=4, xMin2=8;
     int count1 = 0,count2=0;
     int time =0;
     private Timer timer;
@@ -24,8 +26,8 @@ class TestPane extends JPanel {
         this.trajectories2 = t2;
         correct = new Color(46, 255, 0);
         normal = new Color(100,149,237);
-        crane = new Crane(50,200, x1, y1,0,0,0);
-        crane2 = new Crane(50,200,x2,y2,1,1,1);
+        crane = new Crane(50,200, x1, y1,xMax,xMin,0);
+        crane2 = new Crane(50,200,x2,y2,xMax2,xMin2,1);
         trajectory1 = trajectories1.get(count1);
         trajectory2 = trajectories2.get(count2);
         loadTrajectory1();
@@ -35,7 +37,7 @@ class TestPane extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 time ++;
-                if(crane.moveCrane(xEnd1, yEnd1, xDelta1, yDelta1)&&crane.overlapCraneArea(crane)) {
+                if(crane.moveCrane(xEnd1, yEnd1, xDelta1, yDelta1)&&!crane.overlapCraneArea(crane2)) {
                     if (count1 < 4) {
                         try {
                             Thread.sleep(1200);
@@ -50,7 +52,7 @@ class TestPane extends JPanel {
                         setReady();
                     }
                 }
-                if(crane2.moveCrane(xEnd2, yEnd2, xDelta2, yDelta2)) {
+                if(crane2.moveCrane(xEnd2, yEnd2, xDelta2, yDelta2)&&!crane2.overlapCraneArea(crane)) {
                     if (count2 < 4) {
                         try {
                             Thread.sleep(1200);
