@@ -35,7 +35,7 @@ class TestPane extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 time ++;
-                if(crane.moveCrane(xEnd1, yEnd1, xDelta1, yDelta1)) {
+                if(crane.moveCrane(xEnd1, yEnd1, xDelta1, yDelta1)&&crane.overlapCraneArea(crane)) {
                     if (count1 < 4) {
                         try {
                             Thread.sleep(1200);
