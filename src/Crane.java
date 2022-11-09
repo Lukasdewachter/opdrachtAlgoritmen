@@ -103,6 +103,7 @@ public class Crane {
     }
     public boolean overlapCraneArea(Crane c) {
         return c.xMin < xMax && xMin < c.xMax;
+
     }
     //
     public double[] getOverlapArea(Crane c) {
