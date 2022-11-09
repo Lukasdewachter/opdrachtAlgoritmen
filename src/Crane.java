@@ -3,15 +3,17 @@ import java.awt.geom.*;
 
 public class Crane {
     private int width, height,craneNr;
-    private double  x,y,yHead;
+    private double  x,y,yHead, xMin, xMax;
     Color body, head;
-    public Crane(int width, int height, double x, double y, int craneNr){
+    public Crane(int width, int height, double x, double y, double xMax, double xMin, int craneNr){
         this.width = width;
         this.height = height;
         this.x=x;
         this.y=y;
         this.yHead = y + 5;
         this.craneNr = craneNr;
+        this.xMax = xMax;
+        this.xMin = xMin;
         body = new Color(109, 128, 161);
         head = new Color(100,149,237);
 
@@ -33,6 +35,22 @@ public class Crane {
 
     public void setY(double y) {
         this.y = y;
+    }
+
+    public double getxMax() {
+        return xMax;
+    }
+
+    public void setxMax(double xMax) {
+        this.xMax = xMax;
+    }
+
+    public void setxMin(double xMin) {
+        this.xMin = xMin;
+    }
+
+    public double getxMin() {
+        return xMin;
     }
 
     public void setYHead(double yHead) {
@@ -82,6 +100,19 @@ public class Crane {
             return true;
         }
         return false;
+    }
+    public boolean overlapCraneArea(Crane c) {   //kijkt of overlap is tussen kranen
+        return c.xMin < xMax && xMin < c.xMax;
+    }
+    public double[] getOverlapArea(Crane c) {         //geeft de min en max in x richting terug van de kraan
+
+        double maxmin = Math.max(xMin, c.xMin);
+        double minmax = Math.min(xMax, c.xMax);
+
+        if (minmax < maxmin)
+            return null;
+        else
+            return new double[]{maxmin, minmax};
     }
 
     public void drawCrane(Graphics2D g2d){

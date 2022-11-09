@@ -24,8 +24,8 @@ class TestPane extends JPanel {
         this.trajectories2 = t2;
         correct = new Color(46, 255, 0);
         normal = new Color(100,149,237);
-        crane = new Crane(50,200, x1, y1,0);
-        crane2 = new Crane(50,200,x2,y2,1);
+        crane = new Crane(50,200, x1, y1,0,0,0);
+        crane2 = new Crane(50,200,x2,y2,1,1,1);
         trajectory1 = trajectories1.get(count1);
         trajectory2 = trajectories2.get(count2);
         loadTrajectory1();
