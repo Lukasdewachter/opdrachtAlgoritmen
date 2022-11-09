@@ -38,12 +38,17 @@ public class Main {
         slots3.add(s1);
         slots3.add(s2);
         slots4.add(s3);
+        List<Container> containers = new ArrayList<>();
         Container c1 = new Container(1,1,slots1);
+        containers.add(c1);
         Container c2 = new Container(2,1,slots2);
+        containers.add(c2);
         Container c3 = new Container(3,2,slots3);
+        containers.add(c3);
         Container c4 = new Container(4,1,slots4);
+        containers.add(c4);
         frame.setVisible(true);
-        frame.add(new TestPane(list, list2));
+        frame.add(new TestPane(list, list2, containers));
         frame.pack();
 
     }

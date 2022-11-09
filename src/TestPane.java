@@ -9,6 +9,7 @@ class TestPane extends JPanel {
     private Color normal, correct;
     private Crane crane;
     private Crane crane2;
+    List<Container> containers;
     List<Trajectory> trajectories1, trajectories2;
     Trajectory trajectory1, trajectory2;
     double x1 = 500, y1 = 50, xDelta1 = 0, yDelta1 = 0, xEnd1 = 0, yEnd1 =0;
@@ -18,7 +19,7 @@ class TestPane extends JPanel {
     private Timer timer;
     private Boolean c1 = false, c2 = false;
     ActionListener al;
-    public TestPane(List<Trajectory>t1,List<Trajectory>t2 ) {
+    public TestPane(List<Trajectory>t1,List<Trajectory>t2, List<Container> containers ) {
         this.trajectories1 =t1;
         this.trajectories2 = t2;
         correct = new Color(46, 255, 0);
@@ -29,6 +30,7 @@ class TestPane extends JPanel {
         trajectory2 = trajectories2.get(count2);
         loadTrajectory1();
         loadTrajectory2();
+        this.containers = containers;
         al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -117,6 +119,9 @@ class TestPane extends JPanel {
                 RenderingHints.VALUE_ANTIALIAS_ON
         );
         g2d.setRenderingHints(rh);
+        for(Container c : containers){
+            c.drawContainer(g2d);
+        }
         crane.drawCrane(g2d);
         crane2.drawCrane(g2d);
 
