@@ -101,10 +101,11 @@ public class Crane {
         }
         return false;
     }
-    public boolean overlapCraneArea(Crane c) {   //kijkt of overlap is tussen kranen
+    public boolean overlapCraneArea(Crane c) {
         return c.xMin < xMax && xMin < c.xMax;
     }
-    public double[] getOverlapArea(Crane c) {         //geeft de min en max in x richting terug van de kraan
+    //
+    public double[] getOverlapArea(Crane c) {
 
         double maxmin = Math.max(xMin, c.xMin);
         double minmax = Math.min(xMax, c.xMax);
