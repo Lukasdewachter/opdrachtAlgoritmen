@@ -93,6 +93,5 @@ public class Crane {
         g2d.fill(l);
         g2d.setColor(Color.BLACK);
         g2d.drawString("Crane "+(craneNr+1)+": "+Double.toString(x-100)+" Y: "+Double.toString(yHead-55), 100+500*craneNr,30);
-
     }
 }
