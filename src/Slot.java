@@ -3,11 +3,13 @@ public class Slot {
     private final int id;
     private final int xCoordinate, yCoordinate;
     private Stack<Container> containerStack;
+    private final int maxHeight;
 
-    public Slot(int id, int xCoordinate, int yCoordinate) {
+    public Slot(int id, int xCoordinate, int yCoordinate, int maxHeight) {
         this.id = id;
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
+        this.maxHeight = maxHeight;
     }
     public void addContainer(Container container) {
         if (!containerStack.isEmpty()) {
@@ -15,9 +17,37 @@ public class Slot {
             containerStack.peek().setIsTop(false);
         }
         container.setIsTop(true);
-        container.setzCoordinate(containerStack.size() + 1);
+        container.setZCoordinate(containerStack.size() + 1);
         containerStack.push(container);
     }
+    public Container removeContainer(Container container) {
+        container.setIsTop(false);
+        container.setZCoordinate(container.getZCoordinate() - 1);
+        if (containerStack.peek().getId() == container.getId()) {
+            containerStack.pop();
+        } else {
+            return null;
+        }
+        if (!containerStack.isEmpty()) {
+            containerStack.peek().setIsTop(true);
+        }
+        return container;
+    }
+    //controleren of het de max hoogte niet overschreidt
+    public boolean safeHeight(int height) {
+        if (containerStack.size() > height) {
+            return false;
+        }
+        return true;
+    }
+    //kijken welke container van boven zit
+    public Container getUpperContainer() {
+        if (!containerStack.isEmpty()) {
+            return containerStack.peek();
+        }
+        return null;
+    }
+    //kijken welke container vanonder zit
 
     public int getId() {
         return id;

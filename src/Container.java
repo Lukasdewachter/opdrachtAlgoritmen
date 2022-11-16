@@ -20,8 +20,20 @@ public class Container {
         this.x=0;
         this.y=0;
     }
-    public void setzCoordinate(int z){
-        z=z;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setZCoordinate(double z){
+        this.z=z;
+    }
+    public double getZCoordinate(){
+        return z;
     }
     public void setCoordinates(){
         if(length==1){
@@ -33,16 +45,16 @@ public class Container {
         }
     }
     public void setIsChild(boolean b){
-        isChild = b;
+        this.isChild = b;
     }
     public void setIsParent(boolean b){
-        isParent = b;
+        this.isParent = b;
     }
     public void setIsTop(boolean b){
-        isTop = b;
+        this.isTop = b;
     }
     public void setIsBottom(boolean b){
-        isBottom = b;
+        this.isBottom = b;
     }
     public boolean isChild(){
         return isChild;
