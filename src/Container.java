@@ -21,6 +21,9 @@ public class Container {
 
         }
     }
+    boolean canStack(){
+        if(slots.)
+    }
     public void drawContainer(Graphics2D g2d){
         setCoordinates();
         g2d.setColor(Color.green);
@@ -29,4 +32,5 @@ public class Container {
         g2d.setColor(Color.black);
         g2d.drawString("id: "+Integer.toString(id), (int) (140+x*100), (int) (72+y*50));
     }
+
 }
