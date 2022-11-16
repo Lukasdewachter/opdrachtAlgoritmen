@@ -122,7 +122,7 @@ class TestPane extends JPanel {
         );
         g2d.setRenderingHints(rh);
         for(Container c : containers){
-            //c.drawContainer(g2d);
+            c.drawContainer(g2d);
         }
         crane.drawCrane(g2d);
         crane2.drawCrane(g2d);

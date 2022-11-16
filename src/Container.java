@@ -64,9 +64,7 @@ public class Container {
     }
 
     private void setCoordinates() {
-        if(length==1){
 
-        }
     }
 
     public void drawContainer(Graphics2D g2d){

@@ -45,8 +45,6 @@ public class Main {
         containers.add(c2);
         Container c3 = new Container(3,2,slots3);
         containers.add(c3);
-        Container c4 = new Container(4,1,slots4);
-        containers.add(c4);
         frame.setVisible(true);
         frame.add(new TestPane(list, list2, containers));
         frame.pack();
