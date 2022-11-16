@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.List;
 public class Container {
     private int id;
@@ -13,12 +14,14 @@ public class Container {
     private boolean isChild;
     private boolean isTop;
     private boolean isBottom;
+    private ArrayList<Integer> slotIds;
     public Container(int id, int length, List<Slot> slots){
         this.id = id;
         this.length = length;
         this.slots=slots;
         this.x=0;
         this.y=0;
+        this.slotIds = new ArrayList<>();
     }
 
     public void setId(int id) {
@@ -34,15 +37,6 @@ public class Container {
     }
     public double getZCoordinate(){
         return z;
-    }
-    public void setCoordinates(){
-        if(length==1){
-            x = slots.get(0).getxCoordinate();
-            y = slots.get(0).getyCoordinate();
-        }else if (length==2){
-            x = slots.get(0).getxCoordinate();
-
-        }
     }
     public void setIsChild(boolean b){
         this.isChild = b;
@@ -68,6 +62,13 @@ public class Container {
     public boolean isBottom(){
         return isBottom;
     }
+
+    private void setCoordinates() {
+        if(length==1){
+
+        }
+    }
+
     public void drawContainer(Graphics2D g2d){
         setCoordinates();
         g2d.setColor(Color.green);
