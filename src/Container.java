@@ -5,7 +5,14 @@ public class Container {
     private int id;
     private int length;
     private List<Slot> slots;
-    private double x,y;
+    private int slotEndIndex;
+    private int slotStartIndex;
+    //Z = height
+    private double x,y,z;
+    private boolean isParent;
+    private boolean isChild;
+    private boolean isTop;
+    private boolean isBottom;
     public Container(int id, int length, List<Slot> slots){
         this.id = id;
         this.length = length;
@@ -13,16 +20,41 @@ public class Container {
         this.x=0;
         this.y=0;
     }
+    public void setzCoordinate(int z){
+        z=z;
+    }
     public void setCoordinates(){
-        if(slots.size()==1){
-            x = slots.get(0).getX();
-            y = slots.get(0).getY();
-        }else{
+        if(length==1){
+            x = slots.get(0).getxCoordinate();
+            y = slots.get(0).getyCoordinate();
+        }else if (length==2){
+            x = slots.get(0).getxCoordinate();
 
         }
     }
-    boolean canStack(){
-        if(slots.)
+    public void setIsChild(boolean b){
+        isChild = b;
+    }
+    public void setIsParent(boolean b){
+        isParent = b;
+    }
+    public void setIsTop(boolean b){
+        isTop = b;
+    }
+    public void setIsBottom(boolean b){
+        isBottom = b;
+    }
+    public boolean isChild(){
+        return isChild;
+    }
+    public boolean isParent(){
+        return isParent;
+    }
+    public boolean isTop(){
+        return isTop;
+    }
+    public boolean isBottom(){
+        return isBottom;
     }
     public void drawContainer(Graphics2D g2d){
         setCoordinates();

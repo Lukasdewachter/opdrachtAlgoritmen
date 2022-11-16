@@ -30,11 +30,11 @@ public class Main {
         List<Slot> slots2 = new ArrayList<>();
         List<Slot> slots3 = new ArrayList<>();
         List<Slot> slots4 = new ArrayList<>();
-        Slot s1 = new Slot(0,0);
+        Slot s1 = new Slot(0,0, 0);
         slots1.add(s1);
-        Slot s2 = new Slot(0,1);
+        Slot s2 = new Slot(0,1, 0);
         slots2.add(s2);
-        Slot s3 = new Slot(0,2);
+        Slot s3 = new Slot(0,2, 0);
         slots3.add(s1);
         slots3.add(s2);
         slots4.add(s3);
