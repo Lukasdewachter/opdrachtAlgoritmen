@@ -2,6 +2,8 @@ import java.awt.*;
 import java.awt.geom.*;
 
 public class Crane {
+    private boolean hasContainer;
+    Container container;
     private int width, height,craneNr;
     private double  x,y,yHead, xMin, xMax;
     Color body, head;
@@ -14,9 +16,20 @@ public class Crane {
         this.craneNr = craneNr;
         this.xMax = xMax;
         this.xMin = xMin;
+        this.container = null;
+        this.hasContainer = false;
         body = new Color(109, 128, 161);
         head = new Color(100,149,237);
 
+    }
+
+    public void setContainer(boolean hasContainer, Container container) {
+        this.hasContainer = hasContainer;
+        this.container = container;
+    }
+
+    public boolean getHasContainer(){
+        return hasContainer;
     }
 
     public double getX() {
@@ -79,6 +92,9 @@ public class Crane {
                     }
                 }
                 setX(x);
+                if(container != null){
+                    container.setX(x/100);
+                }
             }
             if (row != yEnd) {
                 if (row < yEnd) {
@@ -95,6 +111,7 @@ public class Crane {
                     }
                 }
                 setYHead(yHead);
+                if(container!=null)container.setY((yHead-5)/50);
             }
         }else{
             return true;
@@ -110,7 +127,6 @@ public class Crane {
 
         double maxmin = Math.max(xMin, c.xMin);
         double minmax = Math.min(xMax, c.xMax);
-
         if (minmax < maxmin)
             return null;
         else

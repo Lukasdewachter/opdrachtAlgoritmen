@@ -18,10 +18,12 @@ class TestPane extends JPanel {
     double xMin=4, xMin2=8;
     int count1 = 0,count2=0;
     int time =0;
+    private List<Slot>slots;
     private Timer timer;
-    private Boolean c1 = false, c2 = false;
+    private Container container;
+    private Boolean c1 = false, c2 = false,containerAttached;
     ActionListener al;
-    public TestPane(List<Trajectory>t1,List<Trajectory>t2, List<Container> containers ) {
+    public TestPane(List<Trajectory>t1,List<Trajectory>t2, List<Container> containers,List<Slot>slots ) {
         this.trajectories1 =t1;
         this.trajectories2 = t2;
         correct = new Color(46, 255, 0);
@@ -29,26 +31,65 @@ class TestPane extends JPanel {
         crane = new Crane(50,200, x1, y1,xMax,xMin,0);
         crane2 = new Crane(50,200,x2,y2,xMax2,xMin2,1);
         trajectory1 = trajectories1.get(count1);
-        trajectory2 = trajectories2.get(count2);
+        //trajectory2 = trajectories2.get(count2);
+        this.slots = slots;
         loadTrajectory1();
-        loadTrajectory2();
+        //loadTrajectory2();
         this.containers = containers;
+        this.container=null;
         al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 time ++;
-                if(crane.moveCrane(xEnd1, yEnd1, v1, 1)&&!crane.overlapCraneArea(crane2)) {
-                    if (count1 < 4) {
+                if(!crane.getHasContainer()){
+                    for(Container c : containers){
+                        if(c.getId() == trajectory1.getContainerId()){
+                            setContainer(c);
+                        }
+                    }
+                    if(container!=null){
+                        double xContainer = container.getX();
+                        double yContainer = container.getY();
+                        if(crane.moveCrane(xContainer,yContainer,v1,1)){
+                            try {
+                                Thread.sleep(1200);
+                            } catch (InterruptedException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            crane.setContainer(true,container);
+                        }
+                    }
+                    else{
+                        System.out.println("Error container null");
+                    }
+                }
+                else if(crane.moveCrane(xEnd1, yEnd1, v1, 1)&&!crane.overlapCraneArea(crane2)) {
+                    if (count1 < trajectories1.size()) {
+                        List<Slot> containerSlots = container.getSlots();
+                        containerSlots.remove(0);
+                        Slot newSlot = getSlot((int)(xEnd1),(int)yEnd1);
+                        newSlot.print();
+                        containerSlots.add(newSlot);
+                        if(containerSlots.size() > 1){
+                            containerSlots.remove(1);
+                            containerSlots.add(getSlot((int)xEnd1,(int)yEnd1+1));
+                        }
+                        container.setSlots(containerSlots);
                         try {
                             Thread.sleep(1200);
                         } catch (InterruptedException ex) {
                             throw new RuntimeException(ex);
                         }
                         count1++;
-                        trajectory1 = trajectories1.get(count1);
-                        loadTrajectory1();
+                        if(count1<trajectories1.size()) {
+                            setContainer(null);
+                            crane.setContainer(false,null);
+                            trajectory1 = trajectories1.get(count1);
+                            loadTrajectory1();
+                        }
                     } else {
                         c1 = true;
+                        c2=true;
                         setReady();
                     }
                 }
@@ -73,11 +114,27 @@ class TestPane extends JPanel {
         timer = new Timer(10,al);
         timer.start();
     }
+    public Slot getSlot(int x , int y){
+        for(Slot slot : slots){
+            if(slot.getxCoordinate()==x && slot.getyCoordinate()==y){
+                return slot;
+            }
+        }
+        return null;
+    }
     public void setReady(){
         if(c1 && c2){
             timer.stop();
+            for(Container c : containers){
+                c.print();
+            }
         }
     }
+
+    public void setContainer(Container container) {
+        this.container = container;
+    }
+
     public void loadTrajectory1(){
         xEnd1 = trajectory1.getX();
         yEnd1 = trajectory1.getY();
@@ -92,7 +149,10 @@ class TestPane extends JPanel {
     public Dimension getPreferredSize() {
         return new Dimension(1200, 300);
     }
+    public void moveContainer(int id, int x, int y){
+        Container container = containers.get(id-1);
 
+    }
     @Override
     protected void paintComponent(Graphics g) {
         g2d = (Graphics2D) g;
@@ -123,7 +183,7 @@ class TestPane extends JPanel {
             c.drawContainer(g2d);
         }
         crane.drawCrane(g2d);
-        crane2.drawCrane(g2d);
+        //crane2.drawCrane(g2d);
 
     }
 }

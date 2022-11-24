@@ -25,7 +25,7 @@ public class Slot {
     //container verwijderen van slot
     public Container removeContainer(Container container) {
         container.setIsTop(false);
-        container.setZCoordinate(container.getZCoordinate() - 1);
+        container.setZCoordinate((int) (container.getZCoordinate() - 1));
         if (containerStack.peek().getId() == container.getId()) {
             containerStack.pop();
         } else {
@@ -69,5 +69,7 @@ public class Slot {
         return yCoordinate;
     }
 
-
+    public  void print(){
+        System.out.println("id: "+id+"   x: "+xCoordinate+" y: "+yCoordinate);
+    }
 }

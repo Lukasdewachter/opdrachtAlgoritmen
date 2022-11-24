@@ -26,6 +26,20 @@ public class Container {
     public void addSlot(Slot slot){
         slots.add(slot);
     }
+
+    public double getY() {
+        double medY=0;
+        for(Slot slot : slots){
+            if(slot!=null)medY +=slot.getyCoordinate();
+        }
+        medY = medY/slots.size();
+        return medY;
+    }
+
+    public double getX() {
+        return x;
+    }
+
     public void setCoordinates(){
         this.x = slots.get(0).getxCoordinate();
         this.y = slots.get(0).getyCoordinate();
@@ -47,7 +61,7 @@ public class Container {
         return id;
     }
 
-    public void setZCoordinate(double z){
+    public void setZCoordinate(int z){
         this.z=z;
     }
     public double getZCoordinate(){
@@ -74,6 +88,19 @@ public class Container {
     public boolean isTop(){
         return isTop;
     }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setSlots(List<Slot> slots) {
+        this.slots = slots;
+    }
+
     public boolean isBottom(){
         return isBottom;
     }
@@ -83,17 +110,16 @@ public class Container {
     public String printSlots(){
         StringBuilder sb = new StringBuilder();
         for (Slot s : slots){
-            sb.append("sId: " +Integer.toString(s.getId()));
+            if(s!=null) sb.append("sId: " +Integer.toString(s.getId()));
         }
         return sb.toString();
     }
     public void drawContainer(Graphics2D g2d){
-        setCoordinates();
         g2d.setColor(color);
-        Rectangle2D rect = new Rectangle2D.Double(100+x*100, 50+y*50,100,50*length);
+        Rectangle2D rect = new Rectangle2D.Double(x*100, y*50,100,50*length);
         g2d.fill(rect);
         g2d.setColor(Color.black);
-        g2d.drawString("id: "+Integer.toString(id), (int) (140+x*100), (int) (72+y*50));
+        g2d.drawString("id: "+Integer.toString(id), (int) (40+x*100), (int) (22+y*50));
     }
 
 }

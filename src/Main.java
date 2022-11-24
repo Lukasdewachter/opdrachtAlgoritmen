@@ -28,14 +28,16 @@ public class Main {
             int x = object1.getInt("x");
             int y = object1.getInt("y");
             double v = object1.getDouble("v");
-            Trajectory tr1 = new Trajectory(x,y,v);
+            int containerId = object1.getInt("container_id");
+            Trajectory tr1 = new Trajectory(x,y,v,containerId);
             list.add(tr1);
-            JSONObject object2 = jsonArray2.getJSONObject(i);
+            /*JSONObject object2 = jsonArray2.getJSONObject(i);
             int x2 = object2.getInt("x");
             int y2 = object2.getInt("y");
             double v2 = object2.getDouble("v");
-            Trajectory tr2 = new Trajectory(x2,y2,v2);
-            list2.add(tr2);
+            int containerId2 = object2.getInt("container_id");
+            Trajectory tr2 = new Trajectory(x2,y2,v2,containerId2);
+            list2.add(tr2);*/
         }
         List<Container> containers = new ArrayList<>();
         List<Slot> slots = new ArrayList<>();
@@ -46,8 +48,8 @@ public class Main {
         for(int i=0; i<jsonSlots.length(); i++){
             JSONObject o = jsonSlots.getJSONObject(i);
             int id = o.getInt("id");
-            int x = o.getInt("x");
-            int y = o.getInt("y");
+            int x = o.getInt("x")+1;
+            int y = o.getInt("y")+1;
             Slot slot = new Slot(id,x,y,2);
             slots.add(slot);
         }
@@ -87,9 +89,12 @@ public class Main {
         }
         for(Container c : containers){
             c.print();
+            c.getSlots().get(0).print();
         }
         frame.setVisible(true);
-        frame.add(new TestPane(list, list2, containers));
+        TestPane testPane = new TestPane(list, list2, containers,slots);
+        frame.add(testPane);
+        testPane.moveContainer(3,2,4);
         frame.pack();
 
     }
