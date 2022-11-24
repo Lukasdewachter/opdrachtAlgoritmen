@@ -12,8 +12,8 @@ class TestPane extends JPanel {
     List<Container> containers;
     List<Trajectory> trajectories1, trajectories2;
     Trajectory trajectory1, trajectory2;
-    double x1 = 500, y1 = 50, xDelta1 = 0, yDelta1 = 0, xEnd1 = 0, yEnd1 =0;
-    double x2 = 900, y2 = 50, xDelta2 = 0, yDelta2 = 0, xEnd2 = 0, yEnd2 =0;
+    double x1 = 500, y1 = 50, v1 = 0, yDelta1 = 0, xEnd1 = 0, yEnd1 =0;
+    double x2 = 900, y2 = 50, v2 = 0, yDelta2 = 0, xEnd2 = 0, yEnd2 =0;
     double xMax=0, xMax2=5;
     double xMin=4, xMin2=8;
     int count1 = 0,count2=0;
@@ -37,7 +37,7 @@ class TestPane extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 time ++;
-                if(crane.moveCrane(xEnd1, yEnd1, xDelta1, yDelta1)&&!crane.overlapCraneArea(crane2)) {
+                if(crane.moveCrane(xEnd1, yEnd1, v1, 1)&&!crane.overlapCraneArea(crane2)) {
                     if (count1 < 4) {
                         try {
                             Thread.sleep(1200);
@@ -52,7 +52,7 @@ class TestPane extends JPanel {
                         setReady();
                     }
                 }
-                if(crane2.moveCrane(xEnd2, yEnd2, xDelta2, yDelta2)&&!crane2.overlapCraneArea(crane)) {
+                if(crane2.moveCrane(xEnd2, yEnd2, v2, 1)&&!crane2.overlapCraneArea(crane)) {
                     if (count2 < 4) {
                         try {
                             Thread.sleep(1200);
@@ -81,14 +81,12 @@ class TestPane extends JPanel {
     public void loadTrajectory1(){
         xEnd1 = trajectory1.getX();
         yEnd1 = trajectory1.getY();
-        xDelta1 = trajectory1.getVx();
-        yDelta1 = trajectory1.getVy();
+        v1 = trajectory1.getV();
     }
     public void loadTrajectory2(){
         xEnd2 = trajectory2.getX();
         yEnd2 = trajectory2.getY();
-        xDelta2 = trajectory2.getVx();
-        yDelta2 = trajectory2.getVy();
+        v2 = trajectory2.getV();
     }
     @Override
     public Dimension getPreferredSize() {
@@ -105,9 +103,9 @@ class TestPane extends JPanel {
         g.setColor(Color.black);
         g2d.drawString("Time: "+time,550,265);
         g2d.drawString("Current task 1: C:"+Integer.toString((int) xEnd1)+"   R: "+Integer.toString((int) yEnd1)+" " +
-                "     Speed X:"+Integer.toString((int) xDelta1)+"  Y: "+Integer.toString((int) yDelta1),100,10);
+                "     Speed X:"+Integer.toString((int) v1)+"  Y: "+Integer.toString((int) yDelta1),100,10);
         g2d.drawString("Current task 2: C:"+Integer.toString((int) xEnd2)+"   R: "+Integer.toString((int) yEnd2)+" " +
-                "     Speed X:"+Integer.toString((int) xDelta2)+"  Y: "+Integer.toString((int) yDelta2),600,10);
+                "     Speed X:"+Integer.toString((int) v2)+"  Y: "+Integer.toString((int) yDelta2),600,10);
         for(int i=1 ; i<6; i++){
             int multiplier = 50*i;
             g2d.drawLine(100,multiplier,1100,multiplier);

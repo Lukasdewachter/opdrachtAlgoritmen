@@ -1,28 +1,18 @@
 public class Trajectory {
-    private double x;
-    private double y;
-    private double Vx;
-    private double Vy;
-    public Trajectory(double x, double y, double Vx, double Vy){
+    private int x,y;
+    private double v;
+    public Trajectory(int x, int y, double v){
         this.x=x;
         this.y=y;
-        this.Vx=Vx;
-        this.Vy=Vy;
+        this.v=v;
     }
 
-    public double getVx() {
-        return Vx;
-    }
-
-    public double getVy() {
-        return Vy;
-    }
-
-    public double getY() {
+    public double getV(){return v;}
+    public int getY() {
         return y;
     }
 
-    public double getX() {
+    public int getX() {
         return x;
     }
 }
