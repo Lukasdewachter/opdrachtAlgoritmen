@@ -111,7 +111,13 @@ public class Crane {
                     }
                 }
                 setYHead(yHead);
-                if(container!=null)container.setY((yHead-5)/50);
+                if(container!=null){
+                    if(container.getSlots().size()>1){
+                        container.setY((yHead-30)/50);
+                    }else{
+                        container.setY((yHead-5)/50);
+                    }
+                }
             }
         }else{
             return true;

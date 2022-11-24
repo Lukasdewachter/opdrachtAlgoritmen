@@ -1,7 +1,7 @@
 public class Trajectory {
-    private int x,y, containerId;
-    private double v;
-    public Trajectory(int x, int y, double v, int containerId){
+    private int containerId;
+    private double x,y,v;
+    public Trajectory(double x, double y, double v, int containerId){
         this.x=x;
         this.y=y;
         this.v=v;
@@ -13,11 +13,11 @@ public class Trajectory {
     }
 
     public double getV(){return v;}
-    public int getY() {
+    public double getY() {
         return y;
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 }

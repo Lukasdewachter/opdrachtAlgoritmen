@@ -25,8 +25,8 @@ public class Main {
         JSONArray jsonArray2 = object.getJSONArray("vectors2");
         for(int i=0; i<jsonArray.length(); i++){
             JSONObject object1 = jsonArray.getJSONObject(i);
-            int x = object1.getInt("x");
-            int y = object1.getInt("y");
+            double x = object1.getDouble("x");
+            double y = object1.getDouble("y");
             double v = object1.getDouble("v");
             int containerId = object1.getInt("container_id");
             Trajectory tr1 = new Trajectory(x,y,v,containerId);
