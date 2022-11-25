@@ -71,7 +71,7 @@ class TestPane extends JPanel {
                         newSlot.print();
                         containerSlots.add(newSlot);
                         if(containerSlots.size() > 1){
-                            containerSlots.remove(1);
+                            containerSlots.remove(0);
                             containerSlots.add(getSlot((int)xEnd1,(int)yEnd1+1));
                         }
                         container.setSlots(containerSlots);
