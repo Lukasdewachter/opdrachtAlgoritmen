@@ -66,6 +66,7 @@ public class Main {
             containers.add(container);
         }
         JSONArray jsonAssignments = object2.getJSONArray("assignments");
+        List<Assignment>assignments = new ArrayList<>();
         for(int i=0; i<jsonAssignments.length();i++){
             JSONObject o = jsonAssignments.getJSONObject(i);
             JSONArray slot_id = o.getJSONArray("slot_id");
@@ -74,8 +75,10 @@ public class Main {
                 slotId[j] = slot_id.getInt(j);
             }
             int container_id = o.getInt("container_id");
+            Assignment assignment = new Assignment(slotId, container_id);
+            assignments.add(assignment);
             for(Container c : containers){
-                if(c.getId() == container_id){
+                if(c.getId() == container_id ){
                     for(int s : slotId){
                         for(Slot slot : slots){
                             if(slot.getId() == s){
@@ -89,7 +92,6 @@ public class Main {
         }
         for(Container c : containers){
             c.print();
-            c.getSlots().get(0).print();
         }
         frame.setVisible(true);
         TestPane testPane = new TestPane(list, list2, containers,slots);
