@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
+import java.util.Collections;
 import java.util.List;
 class TestPane extends JPanel {
     public Graphics2D g2d;
@@ -50,13 +51,24 @@ class TestPane extends JPanel {
                     if(container!=null){
                         double xContainer = container.getX();
                         double yContainer = container.getY();
+                        List<Slot>containerSlots = container.getSlots();
                         if(crane.moveCrane(xContainer,yContainer,v1,1)){
                             try {
-                                Thread.sleep(1200);
+                                Thread.sleep(1000);
                             } catch (InterruptedException ex) {
                                 throw new RuntimeException(ex);
                             }
-                            crane.setContainer(true,container);
+                            for(Slot s : containerSlots){
+                                if(s.getTopContainer().equals(container)) {
+                                    s.removeContainer(container);
+                                    containers.remove(containers.indexOf(container));
+                                    containers.add(container);
+                                    crane.setContainer(true,container);
+                                }else{
+                                    System.out.println("Can't pick this container");
+                                    break;
+                                }
+                            }
                         }
                     }
                     else{
@@ -65,17 +77,33 @@ class TestPane extends JPanel {
                 }
                 else if(crane.moveCrane(xEnd1, yEnd1, v1, 1)&&!crane.overlapCraneArea(crane2)) {
                     if (count1 < trajectories1.size()) {
-                        List<Slot> containerSlots = container.getSlots();
-                        containerSlots.remove(0);
+                        List<Slot>containerSlots = container.getSlots();
                         Slot newSlot = getSlot((int)(xEnd1),(int)yEnd1);
-                        containerSlots.add(newSlot);
-                        if(containerSlots.size() > 1){
-                            containerSlots.remove(0);
-                            containerSlots.add(getSlot((int)xEnd1,(int)yEnd1+1));
+                        Slot secondSlot=null;
+                        if(container.getLength()>1){
+                            secondSlot = getSlot((int)xEnd1,(int)yEnd1+1);
+                            if(newSlot.getContainerStack().size() == secondSlot.getContainerStack().size() && newSlot.getTopContainerLength()<2 && secondSlot.getTopContainerLength()<2){
+                                containerSlots.clear();
+                                containerSlots.add(newSlot);
+                                containerSlots.add(secondSlot);
+                                newSlot.addContainer(container);
+                                secondSlot.addContainer(container);
+                            }
+                            else{
+                                System.out.println("container doesn't fit");
+                            }
+                        }else {
+                            if (containerSlots.size() == 1 && newSlot.getTopContainerLength() == 2) {
+                                System.out.println("Container doesn't fit");
+                            } else {
+                                containerSlots.remove(0);
+                                containerSlots.add(newSlot);
+                                newSlot.addContainer(container);
+                            }
                         }
                         container.setSlots(containerSlots);
                         try {
-                            Thread.sleep(1200);
+                            Thread.sleep(1000);
                         } catch (InterruptedException ex) {
                             throw new RuntimeException(ex);
                         }

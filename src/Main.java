@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import java.awt.*;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 /*
     - Transformeren naar andere layouts
@@ -39,7 +40,7 @@ public class Main {
             Trajectory tr2 = new Trajectory(x2,y2,v2,containerId2);
             list2.add(tr2);*/
         }
-        List<Container> containers = new ArrayList<>();
+        List<Container> containers = new LinkedList<>();
         List<Slot> slots = new ArrayList<>();
         Object obj2 = new JSONParser().parse(new FileReader("./input/terminal_4_3.json"));
         JSONTokener tokener2 = new JSONTokener(String.valueOf(obj2));
@@ -83,15 +84,13 @@ public class Main {
                         for(Slot slot : slots){
                             if(slot.getId() == s){
                                 c.addSlot(slot);
+                                slot.addContainer(c);
                             }
                         }
                     }
                     c.setCoordinates();
                 }
             }
-        }
-        for(Container c : containers){
-            c.print();
         }
         frame.setVisible(true);
         TestPane testPane = new TestPane(list, list2, containers,slots);

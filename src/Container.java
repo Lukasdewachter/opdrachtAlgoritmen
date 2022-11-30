@@ -120,6 +120,7 @@ public class Container {
         g2d.fill(rect);
         g2d.setColor(Color.black);
         g2d.drawString("id: "+Integer.toString(id), (int) (40+x*100), (int) (22+y*50));
+        g2d.drawString("slots:  "+printSlots(),(int)(7+x*100),(int)(35+y*50));
     }
 
 }

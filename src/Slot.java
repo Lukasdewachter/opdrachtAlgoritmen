@@ -11,6 +11,7 @@ public class Slot {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
         this.maxHeight = maxHeight;
+        containerStack = new Stack<>();
     }
     //container toevoegen aan slot
     public void addContainer(Container container) {
@@ -68,8 +69,20 @@ public class Slot {
     public int getyCoordinate() {
         return yCoordinate;
     }
+    public int getTopContainerLength(){
+        if(containerStack.size()<1){
+            return 0;
+        }
+        else return getTopContainer().getLength();
+    }
+    public Stack<Container> getContainerStack() {
+        return containerStack;
+    }
 
     public  void print(){
         System.out.println("id: "+id+"   x: "+xCoordinate+" y: "+yCoordinate);
+        for(Container c : containerStack){
+            c.print();
+        }
     }
 }

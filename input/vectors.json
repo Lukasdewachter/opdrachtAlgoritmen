@@ -7,19 +7,25 @@
       "container_id": 4
     },
     {
-      "x": 1,
+      "x": 3,
       "y": 3.5,
       "v": 2,
       "container_id": 3
     },
     {
-      "x": 2,
-      "y": 4,
+      "x": 5,
+      "y": 3,
       "v": 2,
       "container_id": 1
     },
     {
-      "x": 4,
+      "x": 2,
+      "y": 2.5,
+      "v": 2,
+      "container_id": 3
+    },
+    {
+      "x": 1,
       "y": 4,
       "v": 2,
       "container_id": 2
