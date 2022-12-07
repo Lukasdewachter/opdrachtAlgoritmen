@@ -17,44 +17,24 @@ public class Main {
     public static void main(String[] args) throws Exception {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        List<Trajectory> list = new ArrayList<Trajectory>();
-        List<Trajectory> list2 = new ArrayList<Trajectory>();
-        Object obj = new JSONParser().parse(new FileReader("./input/vectors.json"));
-        JSONTokener tokener = new JSONTokener(String.valueOf(obj));
-        JSONObject object = new JSONObject(tokener);
-        JSONArray jsonArray = object.getJSONArray("vectors1");
-        JSONArray jsonArray2 = object.getJSONArray("vectors2");
-        for(int i=0; i<jsonArray.length(); i++){
-            JSONObject object1 = jsonArray.getJSONObject(i);
-            double x = object1.getDouble("x");
-            double y = object1.getDouble("y");
-            double v = object1.getDouble("v");
-            int containerId = object1.getInt("container_id");
-            Trajectory tr1 = new Trajectory(x,y,v,containerId);
-            list.add(tr1);
-            /*JSONObject object2 = jsonArray2.getJSONObject(i);
-            int x2 = object2.getInt("x");
-            int y2 = object2.getInt("y");
-            double v2 = object2.getDouble("v");
-            int containerId2 = object2.getInt("container_id");
-            Trajectory tr2 = new Trajectory(x2,y2,v2,containerId2);
-            list2.add(tr2);*/
-        }
         List<Container> containers = new LinkedList<>();
         List<Slot> slots = new ArrayList<>();
-        Object obj2 = new JSONParser().parse(new FileReader("./input/terminal_4_3.json"));
-        JSONTokener tokener2 = new JSONTokener(String.valueOf(obj2));
-        JSONObject object2 = new JSONObject(tokener2);
-        JSONArray jsonSlots = object2.getJSONArray("slots");
+        Object obj = new JSONParser().parse(new FileReader("./input/terminal22_1_100_1_10.json"));
+        JSONTokener tokener = new JSONTokener(String.valueOf(obj));
+        JSONObject object = new JSONObject(tokener);
+        int startHeight = object.getInt("maxheight");
+        int length = object.getInt("length");
+        int width = object.getInt("width");
+        JSONArray jsonSlots = object.getJSONArray("slots");
         for(int i=0; i<jsonSlots.length(); i++){
             JSONObject o = jsonSlots.getJSONObject(i);
             int id = o.getInt("id");
             int x = o.getInt("x")+1;
             int y = o.getInt("y")+1;
-            Slot slot = new Slot(id,x,y,2);
+            Slot slot = new Slot(id,x,y,startHeight);
             slots.add(slot);
         }
-        JSONArray jsonContainers = object2.getJSONArray("containers");
+        JSONArray jsonContainers = object.getJSONArray("containers");
         for(int i=0; i<jsonContainers.length();i++){
             int red = (int)(Math.random()*256);
             int green = (int)(Math.random()*256);
@@ -62,38 +42,60 @@ public class Main {
             Color color = new Color(red,green,blue);
             JSONObject o = jsonContainers.getJSONObject(i);
             int id = o.getInt("id");
-            int length = o.getInt("length");
-            Container container = new Container(id,length, color);
+            int clength = o.getInt("length");
+            Container container = new Container(id,clength, color);
             containers.add(container);
         }
-        JSONArray jsonAssignments = object2.getJSONArray("assignments");
+        JSONArray jsonAssignments = object.getJSONArray("assignments");
         List<Assignment>assignments = new ArrayList<>();
         for(int i=0; i<jsonAssignments.length();i++){
             JSONObject o = jsonAssignments.getJSONObject(i);
-            JSONArray slot_id = o.getJSONArray("slot_id");
-            int[] slotId = new int[slot_id.length()];
-            for(int j=0; j<slotId.length;j++){
-                slotId[j] = slot_id.getInt(j);
-            }
+            int slotId = o.getInt("slot_id");
             int container_id = o.getInt("container_id");
             Assignment assignment = new Assignment(slotId, container_id);
             assignments.add(assignment);
             for(Container c : containers){
                 if(c.getId() == container_id ){
-                    for(int s : slotId){
-                        for(Slot slot : slots){
-                            if(slot.getId() == s){
-                                c.addSlot(slot);
-                                slot.addContainer(c);
-                            }
+                    for(Slot slot : slots) {
+                        if (slot.getId() == slotId) {
+                            c.addSlot(slot);
+                            slot.addContainer(c);
                         }
                     }
                     c.setCoordinates();
                 }
             }
         }
+        JSONArray jsonCranes = object.getJSONArray("cranes");
+        List<Crane>cranes = new ArrayList<>();
+        for(int i=0; i<jsonCranes.length();i++) {
+            JSONObject o = jsonCranes.getJSONObject(i);
+            double x = o.getDouble("x");
+            double y = o.getDouble("y");
+            double ymin = o.getDouble("ymin");
+            double ymax = o.getDouble("ymax");
+            int id = o.getInt("id");
+            double xspeed = o.getDouble("xspeed");
+            double yspeed = o.getDouble("yspeed");
+            double xmin = o.getDouble("xmin");
+            double xmax = o.getDouble("xmax");
+            Crane crane = new Crane(50,200,x,y,ymin,ymax,id,xspeed,yspeed,xmin,xmax);
+            cranes.add(crane);
+        }
+        Object obj2 = new JSONParser().parse(new FileReader("./input/terminal22_1_100_1_10target.json"));
+        JSONTokener tokener2 = new JSONTokener(String.valueOf(obj));
+        JSONObject object2 = new JSONObject(tokener2);
+        JSONArray jsonEndAssignments = object2.getJSONArray("assignments");
+        List<Assignment>endAssignments = new ArrayList<>();
+        for(int i=0; i<jsonEndAssignments.length();i++) {
+            JSONObject o = jsonEndAssignments.getJSONObject(i);
+            int slotId = o.getInt("slot_id");
+            int containerId = o.getInt("container_id");
+            Assignment assignment = new Assignment(slotId,containerId);
+            endAssignments.add(assignment);
+        }
         frame.setVisible(true);
-        TestPane testPane = new TestPane(list, list2, containers,slots);
+        TestPane testPane = new TestPane(null,null,containers,slots,length,width);
         frame.add(testPane);
         testPane.moveContainer(3,2,4);
         frame.pack();

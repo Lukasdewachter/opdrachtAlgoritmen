@@ -18,23 +18,23 @@ class TestPane extends JPanel {
     double xMax=0, xMax2=5;
     double xMin=4, xMin2=8;
     int count1 = 0,count2=0;
-    int time =0;
+    int length,width,time=0;
     private List<Slot>slots;
     private Timer timer;
     private Container container;
     private Boolean c1 = false, c2 = false,containerAttached;
     ActionListener al;
-    public TestPane(List<Trajectory>t1,List<Trajectory>t2, List<Container> containers,List<Slot>slots ) {
+    public TestPane(List<Trajectory>t1,List<Trajectory>t2, List<Container> containers,List<Slot>slots, int length, int width ) {
         this.trajectories1 =t1;
         this.trajectories2 = t2;
+        this.length = length;
+        this.width=width;
         correct = new Color(46, 255, 0);
         normal = new Color(100,149,237);
-        crane = new Crane(50,200, x1, y1,xMax,xMin,0);
-        crane2 = new Crane(50,200,x2,y2,xMax2,xMin2,1);
-        trajectory1 = trajectories1.get(count1);
+        //trajectory1 = trajectories1.get(count1);
         //trajectory2 = trajectories2.get(count2);
         this.slots = slots;
-        loadTrajectory1();
+        //loadTrajectory1();
         //loadTrajectory2();
         this.containers = containers;
         this.container=null;
@@ -193,23 +193,25 @@ class TestPane extends JPanel {
                 "     Speed X:"+Integer.toString((int) v1)+"  Y: "+Integer.toString((int) yDelta1),100,10);
         g2d.drawString("Current task 2: C:"+Integer.toString((int) xEnd2)+"   R: "+Integer.toString((int) yEnd2)+" " +
                 "     Speed X:"+Integer.toString((int) v2)+"  Y: "+Integer.toString((int) yDelta2),600,10);
-        for(int i=1 ; i<6; i++){
-            int multiplier = 50*i;
-            g2d.drawLine(100,multiplier,1100,multiplier);
+        int yMultiplier = 50;
+        for(int i=1 ; i<width+2; i++){
+            g2d.drawLine(100,yMultiplier,1100,yMultiplier);
+            yMultiplier +=(200/width);
         }
-        for(int i=1; i<12; i++){
-            int multiplier = 100*i;
-            g2d.drawLine(multiplier,50,multiplier,250);
+        int xMultiplier = 100;
+        for(int i=1; i<length+2; i++){
+            g2d.drawLine(xMultiplier,50,xMultiplier,250);
+            xMultiplier +=(1000)/length;
         }
-        RenderingHints rh = new RenderingHints(
+        /*RenderingHints rh = new RenderingHints(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON
         );
         g2d.setRenderingHints(rh);
         for(Container c : containers){
             c.drawContainer(g2d);
-        }
-        crane.drawCrane(g2d);
+        }*/
+        //crane.drawCrane(g2d);
         //crane2.drawCrane(g2d);
 
     }

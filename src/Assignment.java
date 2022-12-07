@@ -1,7 +1,7 @@
 public class Assignment {
-    private int[] slotId;
+    private int slotId;
     private int containerId;
-    public Assignment(int[]slotId, int containerId){
+    public Assignment(int slotId, int containerId){
         this.slotId=slotId;
         this.containerId=containerId;
     }
@@ -10,7 +10,7 @@ public class Assignment {
         return containerId;
     }
 
-    public int[] getSlotId() {
+    public int getSlotId() {
         return slotId;
     }
 }

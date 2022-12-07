@@ -4,18 +4,16 @@ import java.awt.geom.*;
 public class Crane {
     private boolean hasContainer;
     Container container;
-    private int width, height,craneNr;
+    private int width, height, id;
     private double  x,y,yHead, xMin, xMax;
     Color body, head;
-    public Crane(int width, int height, double x, double y, double xMax, double xMin, int craneNr){
+    public Crane(int width, int height, double x, double y, double ymin, double ymax,int id,double xspeed,double yspeed,double xmin,double xmax){
         this.width = width;
         this.height = height;
         this.x=x;
         this.y=y;
         this.yHead = y + 5;
-        this.craneNr = craneNr;
-        this.xMax = xMax;
-        this.xMin = xMin;
+        this.id = id;
         this.container = null;
         this.hasContainer = false;
         body = new Color(109, 128, 161);
@@ -147,6 +145,6 @@ public class Crane {
         g2d.setColor(head);
         g2d.fill(l);
         g2d.setColor(Color.BLACK);
-        g2d.drawString("Crane "+(craneNr+1)+": "+Double.toString(x-100)+" Y: "+Double.toString(yHead-55), 100+500*craneNr,30);
+        g2d.drawString("Crane "+(id +1)+": "+Double.toString(x-100)+" Y: "+Double.toString(yHead-55), 100+500* id,30);
     }
 }
