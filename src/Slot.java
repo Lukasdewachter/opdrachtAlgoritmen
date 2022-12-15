@@ -6,13 +6,15 @@ public class Slot {
     private final int xCoordinate, yCoordinate;
     private Stack<Container> containerStack;
     private final int maxHeight;
+    private int containerX,containerY;
 
-
-    public Slot(int id, int xCoordinate, int yCoordinate, int maxHeight) {
+    public Slot(int id, int xCoordinate, int yCoordinate, int maxHeight, int containerX,int containerY) {
         this.id = id;
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
         this.maxHeight = maxHeight;
+        this.containerX = containerX;
+        this.containerY = containerY;
         containerStack = new Stack<>();
     }
     //container toevoegen aan slot
@@ -85,10 +87,10 @@ public class Slot {
         System.out.println("id: "+id+"   x: "+xCoordinate+" y: "+yCoordinate);
 
     }
-    public void drawSlot(Graphics2D g2d, int containerX, int containerY){
+    public void drawSlot(Graphics2D g2d){
         g2d.setColor(Color.BLACK);
-        double newX = 50+((xCoordinate-1)*containerX);
-        double newY = 50+((yCoordinate-1)*containerY);
+        double newX = 50+((xCoordinate)*containerX);
+        double newY = 50+((yCoordinate)*containerY);
         g2d.drawString(Integer.toString(id), (int) newX+(containerX/2)-5, (int) newY+(containerY/2));
         g2d.drawString(Integer.toString(containerStack.size()), (int) newX+(containerX/2)-5, (int) newY+(containerY/2)+10);
     }

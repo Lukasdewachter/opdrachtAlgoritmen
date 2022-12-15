@@ -19,19 +19,21 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         List<Container> containers = new LinkedList<>();
         List<Slot> slots = new ArrayList<>();
-        Object obj = new JSONParser().parse(new FileReader("./input/1t/TerminalA_20_10_3_2_100.json"));
+        Object obj = new JSONParser().parse(new FileReader("./input/6t/Terminal_10_10_3_1_100.json"));
         JSONTokener tokener = new JSONTokener(String.valueOf(obj));
         JSONObject object = new JSONObject(tokener);
         int startHeight = object.getInt("maxheight");
         int length = object.getInt("length");
         int width = object.getInt("width");
+        int containerLength = 1450/(length+1);
+        int containerWidth = 780/(width+1);
         JSONArray jsonSlots = object.getJSONArray("slots");
         for(int i=0; i<jsonSlots.length(); i++){
             JSONObject o = jsonSlots.getJSONObject(i);
             int id = o.getInt("id");
-            int x = o.getInt("x")+1;
-            int y = o.getInt("y")+1;
-            Slot slot = new Slot(id,x,y,startHeight);
+            int x = o.getInt("x");
+            int y = o.getInt("y");
+            Slot slot = new Slot(id,x,y,startHeight,containerLength,containerWidth);
             slots.add(slot);
         }
         JSONArray jsonContainers = object.getJSONArray("containers");
@@ -43,7 +45,7 @@ public class Main {
             JSONObject o = jsonContainers.getJSONObject(i);
             int id = o.getInt("id");
             int clength = o.getInt("length");
-            Container container = new Container(id,clength, color);
+            Container container = new Container(id,clength, color,containerLength,containerWidth);
             containers.add(container);
             System.out.println(i);
         }
@@ -80,7 +82,7 @@ public class Main {
             double yspeed = o.getDouble("yspeed");
             double xmin = o.getDouble("xmin");
             double xmax = o.getDouble("xmax");
-            Crane crane = new Crane(50,200,x,y,ymin,ymax,id,xspeed,yspeed,xmin,xmax);
+            Crane crane = new Crane(length,width,x,y,ymin,ymax,id,xspeed,yspeed,xmin,xmax,containerLength,containerWidth);
             cranes.add(crane);
         }
         Object obj2 = new JSONParser().parse(new FileReader("./input/terminal22_1_100_1_10target.json"));
@@ -96,7 +98,7 @@ public class Main {
             endAssignments.add(assignment);
         }
         frame.setVisible(true);
-        TestPane testPane = new TestPane(null,null,cranes,containers,slots,length,width);
+        TestPane testPane = new TestPane(null,null,cranes,containers,slots,length,width,containerLength,containerWidth);
         frame.add(testPane);
         frame.setPreferredSize(new Dimension(1650,1080));
         frame.pack();

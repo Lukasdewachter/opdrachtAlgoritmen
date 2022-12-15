@@ -5,10 +5,11 @@ import java.util.List;
 public class Container {
     private int id;
     private int size;
-    private int width,length;
+    private int width,length,containerX,containerY;
     private List<Slot> slots;
     private int slotEndIndex;
     private int slotStartIndex;
+
     //Z = height
     private double x=0,y=0,z;
     private Color color;
@@ -17,13 +18,15 @@ public class Container {
     private boolean isTop;
     private boolean isBottom;
     private ArrayList<Integer> slotIds;
-    public Container(int id, int length, Color color){
+    public Container(int id, int length, Color color,int containerX,int containerY){
         this.id = id;
         this.size = size;
         slots = new ArrayList<>();
         this.color = color;
         this.width =0;
         this.length=0;
+        this.containerX = containerX;
+        this.containerY = containerY;
     }
     public void addSlot(Slot slot){
         slots.add(slot);
@@ -117,13 +120,13 @@ public class Container {
         }
         return sb.toString();
     }
-    public void drawContainer(Graphics2D g2d,int containerX, int containerY){
-        setLength(containerY);
-        setWidth(containerX);
+    public void drawContainer(Graphics2D g2d){
+        setLength(containerX);
+        setWidth(containerY);
         g2d.setColor(color);
-        double newX = 50+((x-1)*width);
-        double newY = 50+((y-1)*length);
-        Rectangle2D rect = new Rectangle2D.Double(newX,newY,width,length);
+        double newX = 50+((x)*length);
+        double newY = 50+((y)*width);
+        Rectangle2D rect = new Rectangle2D.Double(newX,newY,length,width);
         g2d.fill(rect);
         g2d.setColor(Color.black);
         if (isTop && containerX>30){

@@ -20,13 +20,13 @@ class TestPane extends JPanel {
     double xMin=4, xMin2=8;
     int count1 = 0,count2=0;
     int length,width,time=0;
-    int containerX=0,containerY=0;
+    int containerX,containerY;
     private List<Slot>slots;
     private Timer timer;
     private Container container;
     private Boolean c1 = false, c2 = false,containerAttached;
     ActionListener al;
-    public TestPane(List<Trajectory>t1,List<Trajectory>t2,List<Crane>cranes, List<Container> containers,List<Slot>slots, int length, int width ) {
+    public TestPane(List<Trajectory>t1,List<Trajectory>t2,List<Crane>cranes, List<Container> containers,List<Slot>slots, int length, int width,int containerX,int containerY) {
         this.trajectories1 =t1;
         this.trajectories2 = t2;
         this.length = length;
@@ -41,6 +41,8 @@ class TestPane extends JPanel {
         this.containers = containers;
         this.container=null;
         this.cranes = cranes;
+        this.containerX = containerX;
+        this.containerY = containerY;
         al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -78,7 +80,7 @@ class TestPane extends JPanel {
                         System.out.println("Error container null");
                     }
                 }
-                else if(crane.moveCrane(xEnd1, yEnd1, v1, 1)&&!crane.overlapCraneArea(crane2)) {
+                else if(crane.moveCrane(xEnd1, yEnd1, v1, 1)) {
                     if (count1 < trajectories1.size()) {
                         List<Slot>containerSlots = container.getSlots();
                         Slot newSlot = getSlot((int)(xEnd1),(int)yEnd1);
@@ -123,7 +125,7 @@ class TestPane extends JPanel {
                         setReady();
                     }
                 }
-                if(crane2.moveCrane(xEnd2, yEnd2, v2, 1)&&!crane2.overlapCraneArea(crane)) {
+                if(crane2.moveCrane(xEnd2, yEnd2, v2, 1)) {
                     if (count2 < 4) {
                         try {
                             Thread.sleep(1200);
@@ -188,51 +190,50 @@ class TestPane extends JPanel {
         //Rectangle2D rect = new Rectangle2D.Double(500,50,200,200);
         //g2d.fill(rect);
         g.setColor(Color.black);
-        g2d.drawString("Time: "+time,550,265);
+        g2d.drawString("Time: "+time,500,20);
         g2d.drawString("Current task 1: C:"+Integer.toString((int) xEnd1)+"   R: "+Integer.toString((int) yEnd1)+" " +
                 "     Speed X:"+Integer.toString((int) v1)+"  Y: "+Integer.toString((int) yDelta1),100,10);
         g2d.drawString("Current task 2: C:"+Integer.toString((int) xEnd2)+"   R: "+Integer.toString((int) yEnd2)+" " +
                 "     Speed X:"+Integer.toString((int) v2)+"  Y: "+Integer.toString((int) yDelta2),600,10);
-        setContainerY(780/(width+1));
         if(containerY>100){
             setContainerY(50);
         }
-        int y = 50;
-        int x = 50;
-        setContainerX(1450/(length+1));
+        int lineY = 50;
+        int lineX = 50;
+
         if(containerX>200){
             setContainerX(100);
         }
         for(int i=0 ; i<width+1; i++){
-            g2d.drawLine(50, y,(containerX*length)+50, y);
+            g2d.drawLine(50, lineY,((containerX)*length)+50, lineY);
             if(i!=width){
-                g2d.drawString(Integer.toString(i),40,y+20);
+                g2d.drawString(Integer.toString(i),40,lineY+10);
             }
-            y += containerY;
+            lineY += containerY;
         }
         for(int i=0; i<length+1; i++){
-            g2d.drawLine( x,50, x,(containerY*width)+50);
+            g2d.drawLine( lineX,50, lineX,((containerY)*width)+50);
             if(i!=length){
-                g2d.drawString(Integer.toString(i),x+20,40);
+                g2d.drawString(Integer.toString(i),lineX+20,40);
             }
-            x += containerX;
+            lineX += containerX;
         }
         System.out.println("containers:"+containers.size());
         for(Container c : containers){
-            c.drawContainer(g2d,containerX,containerY);
+            c.drawContainer(g2d);
         }
         for(Crane c : cranes){
-            c.drawCrane(g2d,containerX,containerY,width);
+            c.drawCrane(g2d);
         }
         for(Slot s : slots){
-            s.drawSlot(g2d,containerX,containerY);
+            s.drawSlot(g2d);
         }
-        /*RenderingHints rh = new RenderingHints(
+        RenderingHints rh = new RenderingHints(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON
         );
         g2d.setRenderingHints(rh);
-
+/*
         //crane2.drawCrane(g2d);
     */
     }
