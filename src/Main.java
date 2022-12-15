@@ -19,7 +19,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         List<Container> containers = new LinkedList<>();
         List<Slot> slots = new ArrayList<>();
-        Object obj = new JSONParser().parse(new FileReader("./input/6t/Terminal_10_10_3_1_100.json"));
+        Object obj = new JSONParser().parse(new FileReader("./input/1t/TerminalA_20_10_3_2_100.json"));
         JSONTokener tokener = new JSONTokener(String.valueOf(obj));
         JSONObject object = new JSONObject(tokener);
         int startHeight = object.getInt("maxheight");
@@ -45,9 +45,9 @@ public class Main {
             JSONObject o = jsonContainers.getJSONObject(i);
             int id = o.getInt("id");
             int clength = o.getInt("length");
+            //TODO : als lengte >1 moeten bij aansluitende slots container ook op stack
             Container container = new Container(id,clength, color,containerLength,containerWidth);
             containers.add(container);
-            System.out.println(i);
         }
         JSONArray jsonAssignments = object.getJSONArray("assignments");
         List<Assignment>assignments = new ArrayList<>();
@@ -61,7 +61,10 @@ public class Main {
                 if(c.getId() == container_id ){
                     for(Slot slot : slots) {
                         if (slot.getId() == slotId) {
-                            c.addSlot(slot);
+                            if(c.getId() == 18){
+                                System.out.println();
+                            }
+                            c.setSlot(slot);
                             slot.addContainer(c);
                         }
                     }
@@ -85,7 +88,7 @@ public class Main {
             Crane crane = new Crane(length,width,x,y,ymin,ymax,id,xspeed,yspeed,xmin,xmax,containerLength,containerWidth);
             cranes.add(crane);
         }
-        Object obj2 = new JSONParser().parse(new FileReader("./input/terminal22_1_100_1_10target.json"));
+        Object obj2 = new JSONParser().parse(new FileReader("./input/1t/targetTerminalA_20_10_3_2_100.json"));
         JSONTokener tokener2 = new JSONTokener(String.valueOf(obj));
         JSONObject object2 = new JSONObject(tokener2);
         JSONArray jsonEndAssignments = object2.getJSONArray("assignments");
@@ -98,7 +101,7 @@ public class Main {
             endAssignments.add(assignment);
         }
         frame.setVisible(true);
-        TestPane testPane = new TestPane(null,null,cranes,containers,slots,length,width,containerLength,containerWidth);
+        TestPane testPane = new TestPane(endAssignments,cranes,containers,slots,length,width,containerLength,containerWidth);
         frame.add(testPane);
         frame.setPreferredSize(new Dimension(1650,1080));
         frame.pack();

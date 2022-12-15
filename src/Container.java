@@ -6,7 +6,7 @@ public class Container {
     private int id;
     private int size;
     private int width,length,containerX,containerY;
-    private List<Slot> slots;
+    private Slot slot;
     private int slotEndIndex;
     private int slotStartIndex;
 
@@ -18,40 +18,45 @@ public class Container {
     private boolean isTop;
     private boolean isBottom;
     private ArrayList<Integer> slotIds;
-    public Container(int id, int length, Color color,int containerX,int containerY){
+    public Container(int id, int size, Color color,int containerX,int containerY){
         this.id = id;
         this.size = size;
-        slots = new ArrayList<>();
         this.color = color;
         this.width =0;
         this.length=0;
         this.containerX = containerX;
         this.containerY = containerY;
+        this.slot=null;
     }
-    public void addSlot(Slot slot){
-        slots.add(slot);
-    }
-
-    public double getY() {
-        double medY=0;
-        for(Slot slot : slots){
-            if(slot!=null)medY +=slot.getyCoordinate();
-        }
-        medY = medY/slots.size();
-        return medY;
+    public void setSlot(Slot slot){
+        this.slot = slot;
     }
 
     public double getX() {
-        return x;
+        if(length ==1){
+            return slot.getxCoordinate();
+        } else if (length==2) {
+            return (slot.getxCoordinate()+0.5);
+        } else if (length==3) {
+            return (slot.getxCoordinate()+1);
+        }
+        else{
+            System.out.println("unknown length");
+        }
+        return  0;
+    }
+
+    public double getY() {
+        return y;
     }
 
     public void setCoordinates(){
-        this.x = slots.get(0).getxCoordinate();
-        this.y = slots.get(0).getyCoordinate();
+        this.x = slot.getxCoordinate();
+        this.y = slot.getyCoordinate();
     }
 
-    public List<Slot> getSlots() {
-        return slots;
+    public Slot getSlot() {
+        return slot;
     }
 
     public void setId(int id) {
@@ -108,29 +113,17 @@ public class Container {
     public void setY(double y) {
         this.y = y;
     }
-
-    public void setSlots(List<Slot> slots) {
-        this.slots = slots;
-    }
-
-    public String printSlots(){
-        StringBuilder sb = new StringBuilder();
-        for (Slot s : slots){
-            if(s!=null) sb.append("sId: " +Integer.toString(s.getId()));
-        }
-        return sb.toString();
-    }
     public void drawContainer(Graphics2D g2d){
         setLength(containerX);
         setWidth(containerY);
         g2d.setColor(color);
         double newX = 50+((x)*length);
         double newY = 50+((y)*width);
-        Rectangle2D rect = new Rectangle2D.Double(newX,newY,length,width);
+        Rectangle2D rect = new Rectangle2D.Double(newX,newY,length*size,width);
         g2d.fill(rect);
         g2d.setColor(Color.black);
         if (isTop && containerX>30){
-            g2d.drawString("id: "+Integer.toString(id), (int) newX, (int) newY+10);
+            g2d.drawString("id: "+Integer.toString(id)+" "+Integer.toString(size), (int) newX, (int) newY+10);
         }
     }
 }

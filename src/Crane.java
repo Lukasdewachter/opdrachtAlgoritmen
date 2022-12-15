@@ -36,22 +36,22 @@ public class Crane {
         return hasContainer;
     }
 
-    public boolean moveCrane(double xEnd, double yEnd, double xDelta, double yDelta){
+    public boolean moveCrane(double xEnd, double yEnd){
         double row = (y -5)/50;
         double collumn = x/100;
         if(collumn != xEnd || row != yEnd) {
             if (collumn != xEnd) {
                 if (collumn < xEnd) {
-                    if (x +xDelta >xEnd * 100) {
+                    if (x +xspeed >xEnd * 100) {
                         x = xEnd * 100;
                     } else {
-                        x += xDelta;
+                        x += xspeed;
                     }
                 } else {
-                    if (x - xDelta < xEnd * 100) {
+                    if (x - xspeed < xEnd * 100) {
                         x = xEnd * 100;
                     } else {
-                        x -= xDelta;
+                        x -= xspeed;
                     }
                 }
                 //setX(x);
@@ -61,21 +61,21 @@ public class Crane {
             }
             if (row != yEnd) {
                 if (row < yEnd) {
-                    if (row * 50 + yDelta > yEnd * 50) {
+                    if (row * 50 + yspeed > yEnd * 50) {
                         y = (yEnd * 50) + 5;
                     } else {
-                        y += yDelta;
+                        y += yspeed;
                     }
                 } else {
-                    if (row * 50 - yDelta < yEnd * 50) {
+                    if (row * 50 - yspeed < yEnd * 50) {
                         y = (yEnd * 50) + 5;
                     } else {
-                        y -= yDelta;
+                        y -= yspeed;
                     }
                 }
                 //setYHead(y);
                 if(container!=null){
-                    if(container.getSlots().size()>1){
+                    if(container.getSlot().size()>1){
                         container.setY((y -30)/50);
                     }else{
                         container.setY((y -5)/50);
@@ -110,9 +110,9 @@ public class Crane {
     }
 
     public void drawCrane(Graphics2D g2d){
-        double newX = 50+((x)*containerX);
+        double newX = (50+(containerX*0.2)/2)+((x)*containerX);
         double newY = 50+((y)*containerY);
-        Rectangle2D.Double r = new Rectangle2D.Double(newX,50,containerX,containerY*width);
+        Rectangle2D.Double r = new Rectangle2D.Double(newX,50,containerX*0.80,containerY*width);
         g2d.setColor(body);
         g2d.fill(r);
         Rectangle2D.Double l = new Rectangle2D.Double((50-0.125*containerX)+((x)*containerX),50+((y)*containerY)+((containerY*0.6)/2),containerX*1.25,containerY*0.4);
