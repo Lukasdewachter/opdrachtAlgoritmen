@@ -1,3 +1,5 @@
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.util.*;
 public class Slot {
     private final int id;
@@ -73,7 +75,7 @@ public class Slot {
         if(containerStack.size()<1){
             return 0;
         }
-        else return getTopContainer().getLength();
+        else return getTopContainer().getSize();
     }
     public Stack<Container> getContainerStack() {
         return containerStack;
@@ -81,8 +83,13 @@ public class Slot {
 
     public  void print(){
         System.out.println("id: "+id+"   x: "+xCoordinate+" y: "+yCoordinate);
-        for(Container c : containerStack){
-            c.print();
-        }
+
+    }
+    public void drawSlot(Graphics2D g2d, int containerX, int containerY){
+        g2d.setColor(Color.BLACK);
+        double newX = 50+((xCoordinate-1)*containerX);
+        double newY = 50+((yCoordinate-1)*containerY);
+        g2d.drawString(Integer.toString(id), (int) newX+(containerX/2)-5, (int) newY+(containerY/2));
+        g2d.drawString(Integer.toString(containerStack.size()), (int) newX+(containerX/2)-5, (int) newY+(containerY/2)+10);
     }
 }

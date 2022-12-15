@@ -12,7 +12,7 @@ public class Crane {
         this.height = height;
         this.x=x;
         this.y=y;
-        this.yHead = y + 5;
+        this.yHead = y;
         this.id = id;
         this.container = null;
         this.hasContainer = false;
@@ -137,11 +137,23 @@ public class Crane {
             return new double[]{maxmin, minmax};
     }
 
-    public void drawCrane(Graphics2D g2d){
-        Rectangle2D.Double r = new Rectangle2D.Double(x+25,y,width,height);
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void drawCrane(Graphics2D g2d, int width, int height,int totalVerticalSlots){
+        setWidth(width);
+        setHeight(height);
+        double newX = 50+(x*width);
+        double newY = 50+(y*height);
+        Rectangle2D.Double r = new Rectangle2D.Double(newX,50,width,totalVerticalSlots*height);
         g2d.setColor(body);
         g2d.fill(r);
-        Rectangle2D.Double l = new Rectangle2D.Double(x+18.75,yHead,width*1.25,height*0.2);
+        Rectangle2D.Double l = new Rectangle2D.Double((50-0.125*width)+(x*width),50+(yHead*height)+((height*0.8)/2),width*1.25,height*0.2);
         g2d.setColor(head);
         g2d.fill(l);
         g2d.setColor(Color.BLACK);

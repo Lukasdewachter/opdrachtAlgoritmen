@@ -19,7 +19,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         List<Container> containers = new LinkedList<>();
         List<Slot> slots = new ArrayList<>();
-        Object obj = new JSONParser().parse(new FileReader("./input/terminal22_1_100_1_10.json"));
+        Object obj = new JSONParser().parse(new FileReader("./input/1t/TerminalA_20_10_3_2_100.json"));
         JSONTokener tokener = new JSONTokener(String.valueOf(obj));
         JSONObject object = new JSONObject(tokener);
         int startHeight = object.getInt("maxheight");
@@ -45,6 +45,7 @@ public class Main {
             int clength = o.getInt("length");
             Container container = new Container(id,clength, color);
             containers.add(container);
+            System.out.println(i);
         }
         JSONArray jsonAssignments = object.getJSONArray("assignments");
         List<Assignment>assignments = new ArrayList<>();
@@ -95,9 +96,9 @@ public class Main {
             endAssignments.add(assignment);
         }
         frame.setVisible(true);
-        TestPane testPane = new TestPane(null,null,containers,slots,length,width);
+        TestPane testPane = new TestPane(null,null,cranes,containers,slots,length,width);
         frame.add(testPane);
-        testPane.moveContainer(3,2,4);
+        frame.setPreferredSize(new Dimension(1650,1080));
         frame.pack();
 
     }

@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 public class Container {
     private int id;
-    private int length;
+    private int size;
+    private int width,length;
     private List<Slot> slots;
     private int slotEndIndex;
     private int slotStartIndex;
@@ -18,10 +19,11 @@ public class Container {
     private ArrayList<Integer> slotIds;
     public Container(int id, int length, Color color){
         this.id = id;
-        this.length = length;
-        this.slotIds = new ArrayList<>();
+        this.size = size;
         slots = new ArrayList<>();
         this.color = color;
+        this.width =0;
+        this.length=0;
     }
     public void addSlot(Slot slot){
         slots.add(slot);
@@ -49,12 +51,16 @@ public class Container {
         return slots;
     }
 
-    public int getLength() {
-        return length;
-    }
-
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
     }
 
     public int getId() {
@@ -92,6 +98,9 @@ public class Container {
     public void setX(double x) {
         this.x = x;
     }
+    public int getSize() {
+        return size;
+    }
 
     public void setY(double y) {
         this.y = y;
@@ -101,12 +110,6 @@ public class Container {
         this.slots = slots;
     }
 
-    public boolean isBottom(){
-        return isBottom;
-    }
-    public void print(){
-        System.out.println("container: "+getId()+"    length: "+getLength()+"    Slots: "+printSlots());
-    }
     public String printSlots(){
         StringBuilder sb = new StringBuilder();
         for (Slot s : slots){
@@ -114,13 +117,17 @@ public class Container {
         }
         return sb.toString();
     }
-    public void drawContainer(Graphics2D g2d){
+    public void drawContainer(Graphics2D g2d,int containerX, int containerY){
+        setLength(containerY);
+        setWidth(containerX);
         g2d.setColor(color);
-        Rectangle2D rect = new Rectangle2D.Double(x*100, y*50,100,50*length);
+        double newX = 50+((x-1)*width);
+        double newY = 50+((y-1)*length);
+        Rectangle2D rect = new Rectangle2D.Double(newX,newY,width,length);
         g2d.fill(rect);
         g2d.setColor(Color.black);
-        g2d.drawString("id: "+Integer.toString(id), (int) (40+x*100), (int) (22+y*50));
-        g2d.drawString("slots:  "+printSlots(),(int)(7+x*100),(int)(35+y*50));
+        if (isTop && containerX>30){
+            g2d.drawString("id: "+Integer.toString(id), (int) newX, (int) newY+10);
+        }
     }
-
 }
