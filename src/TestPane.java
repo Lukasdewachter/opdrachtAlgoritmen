@@ -238,7 +238,7 @@ class TestPane extends JPanel {
             c.drawContainer(g2d);
         }
         for(Crane c : cranes){
-            c.drawCrane(g2d);
+            crane.drawCrane(g2d);
         }
         for(Slot s : slots){
             s.drawSlot(g2d);
