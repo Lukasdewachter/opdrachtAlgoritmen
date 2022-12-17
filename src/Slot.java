@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.geom.Rectangle2D;
 import java.util.*;
 public class Slot {
     private final int id;
@@ -19,6 +18,7 @@ public class Slot {
     }
     //container toevoegen aan slot
     public void addContainer(Container container) {
+        //TODO : find out why random slots keep stacking
         if (!containerStack.isEmpty()) {
             // The java.util.Stack.peek() method in Java is used to retrieve or fetch the first element of the Stack or the element present at the top of the Stack. The element retrieved does not get deleted or removed from the Stack.
             containerStack.peek().setIsTop(false);
@@ -62,15 +62,18 @@ public class Slot {
         }
         return null;
     }
+    public int getStackSize(){
+        return containerStack.size();
+    }
     public int getId() {
         return id;
     }
 
-    public int getxCoordinate() {
+    public int getXCoordinate() {
         return xCoordinate;
     }
 
-    public int getyCoordinate() {
+    public int getYCoordinate() {
         return yCoordinate;
     }
     public int getTopContainerLength(){
@@ -92,6 +95,7 @@ public class Slot {
         double newX = 50+((xCoordinate)*containerX);
         double newY = 50+((yCoordinate)*containerY);
         g2d.drawString(Integer.toString(id), (int) newX+(containerX/2)-5, (int) newY+(containerY/2));
+        g2d.setColor(Color.white);
         g2d.drawString(Integer.toString(containerStack.size()), (int) newX+(containerX/2)-5, (int) newY+(containerY/2)+10);
     }
 }

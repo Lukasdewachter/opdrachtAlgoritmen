@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.List;
+
 public class Container {
     private int id;
     private int size;
@@ -33,12 +33,12 @@ public class Container {
     }
 
     public double getX() {
-        if(length ==1){
-            return slot.getxCoordinate();
+        if(size ==1){
+            return slot.getXCoordinate();
         } else if (length==2) {
-            return (slot.getxCoordinate()+0.5);
+            return (slot.getXCoordinate()+0.5);
         } else if (length==3) {
-            return (slot.getxCoordinate()+1);
+            return (slot.getXCoordinate()+1);
         }
         else{
             System.out.println("unknown length");
@@ -51,8 +51,8 @@ public class Container {
     }
 
     public void setCoordinates(){
-        this.x = slot.getxCoordinate();
-        this.y = slot.getyCoordinate();
+        this.x = slot.getXCoordinate();
+        this.y = slot.getYCoordinate();
     }
 
     public Slot getSlot() {

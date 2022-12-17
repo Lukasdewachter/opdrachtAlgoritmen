@@ -38,6 +38,8 @@ class TestPane extends JPanel {
         this.containers = containers;
         this.container=null;
         this.cranes = cranes;
+        this.crane = cranes.get(0);
+        //if(cranes.size()>1)this.crane2=cranes.get(1);
         this.containerX = containerX;
         this.containerY = containerY;
         al = new ActionListener() {
@@ -49,30 +51,34 @@ class TestPane extends JPanel {
                     throw new RuntimeException(ex);
                 }
                 time ++;
-                if(!cranes.get(0).getHasContainer()){
-                    for(Container c : containers){
-                        if(c.getId() == assignment.getContainerId()){
+                if(!crane.getHasContainer()){
+                    while(true){
+                        Container c  = containers.get(assignment.getContainerId());
+                        Slot containerSlot = c.getSlot();
+                        Slot endSlot = slots.get(assignment.getSlotId());
+                        if(containerSlot.getId() == endSlot.getId()){
+                            assignments.remove(0);
+                            if(assignments.isEmpty())break;
+                            setAssignment(assignments.get(0));
+                        }else{
                             setContainer(c);
+                            setEndCoordinates(assignment);
+                            break;
                         }
                     }
-                    Slot containerSlot = container.getSlot();
-                    if(container!=null){
+                    if(container!=null && canTakeContainer(container) && canPlaceContainer(container,assignment.getSlotId())){
                         double xContainer = container.getX();
                         double yContainer = container.getY();
-                        if(crane.moveCrane(xContainer,yContainer)){
+                        if(crane.moveCrane(xContainer,yContainer)) {
                             try {
                                 sleep(1000);
                             } catch (InterruptedException ex) {
                                 throw new RuntimeException(ex);
                             }
-                            if(canTakeContainer(container)) {
-                                containerSlot.removeContainer(container);
-                                containers.remove(containers.indexOf(container));
-                                containers.add(container);
-                                crane.setContainer(true, container);
-                            }else {
-                                System.out.println("Can't pick this container");
-                            }
+                            container.getSlot().removeContainer(container);
+                            containers.remove(containers.indexOf(container));
+                            containers.add(container);
+                            crane.setContainer(true, container);
                         }
                     }
                     else{
@@ -80,42 +86,24 @@ class TestPane extends JPanel {
                     }
                 }
                 else if(crane.moveCrane(xEnd1, yEnd1)) {
-                    if (count1 < assignments.size()) {
-                        Slot newSlot = getSlot((int)(xEnd1),(int)yEnd1);
-                        if(container.getSize()>1){
-                            if(canPlaceContainer(container)){
-                                container.setSlot(newSlot);
-                                newSlot.addContainer(container);
-                            }
-                            else{
-                                System.out.println("container doesn't fit");
-                            }
-                        }else {
-                            if (containerSlots.size() == 1 && newSlot.getTopContainerLength() == 2) {
-                                System.out.println("Container doesn't fit");
-                            } else {
-                                containerSlots.remove(0);
-                                containerSlots.add(newSlot);
-                                newSlot.addContainer(container);
-                            }
+                        Slot newSlot = slots.get(assignment.getSlotId());
+                        container.setSlot(newSlot);
+                        newSlot.addContainer(container);
+                        assignments.remove(0);
+                        if (!assignments.isEmpty()) {
+                            setAssignment(assignments.get(0));
+                        }else{
+                            setContainer(null);
+                            crane.setContainer(false, null);
+                            c1 = true;
+                            c2=true;
+                            setReady();
                         }
-                        container.setSlots(containerSlots);
                         try {
                             sleep(1000);
                         } catch (InterruptedException ex) {
                             throw new RuntimeException(ex);
                         }
-                        count1++;
-                        if(count1<assignments.size()) {
-                            setContainer(null);
-                            crane.setContainer(false,null);
-                            assignment = assignments.get(count1);
-                        }
-                    } else {
-                        c1 = true;
-                        c2=true;
-                        setReady();
-                    }
                 }
                 /*if(crane2.moveCrane(xEnd2, yEnd2, v2, 1)) {
                     if (count2 < 4) {
@@ -138,23 +126,60 @@ class TestPane extends JPanel {
         timer = new Timer(10,al);
         timer.start();
     }
-    public Boolean canPlaceContainer(Container container){
-        int idSlot = container.getSlot().getId();
-        for(int i=idSlot; i<idSlot+length;i++){
-            //TODO: check of plaatsen kan
-        }
-    }
-    public  Boolean canTakeContainer(Container container){
-        //TODO : check of container weg kan
-    }
-    public Slot getSlot(int x , int y){
-        for(Slot slot : slots){
-            if(slot.getxCoordinate()==x && slot.getyCoordinate()==y){
-                return slot;
+    public Boolean canPlaceContainer(Container container, int endSlotId){
+        Slot s =  slots.get(endSlotId);
+        int idSlot = s.getId();
+        int yCoordinate = s.getYCoordinate();
+        int heigth = s.getStackSize();
+        for(int i=idSlot; i<idSlot+container.getSize();i++){
+            Slot sl = slots.get(i);
+            if(sl.getStackSize() != heigth){
+                System.out.println("Slot "+sl.getId()+" Heeft niet juiste hoogte");
+                return false;
+            }
+            if(sl.getTopContainer().getSize()>1){
+                System.out.println("Bovenste Container is te groot");
+                return false;
+            }
+            if(sl.getYCoordinate() != yCoordinate){
+                System.out.println("Slot "+sl.getId()+" Heeft niet juiste y coordinaat");
             }
         }
-        return null;
+        return true;
     }
+    public  Boolean canTakeContainer(Container container){
+        Slot s =  container.getSlot();
+        int idSlot = s.getId();
+        int yCoordinate = s.getYCoordinate();
+        int heigth = s.getStackSize();
+        for(int i=idSlot; i<idSlot+container.getSize();i++){
+            Slot sl = slots.get(i);
+            if(s.getTopContainer().getId() != container.getId()){
+                System.out.println("Slot "+sl.getId()+" Heeft een andere container bovenaan");
+                return false;
+            }
+            if(sl.getYCoordinate() != yCoordinate){
+                System.out.println("Slot "+sl.getId()+" Heeft niet juiste y coordinaat");
+            }
+        }
+        return true;
+    }
+    public void setEndCoordinates(Assignment as){
+        double xEnd = slots.get(as.getSlotId()).getXCoordinate();
+        double yEnd = slots.get(as.getSlotId()).getYCoordinate();
+        if(container.getSize()==2){
+            xEnd+=0.5;
+        }
+        if(container.getSize()==3){
+            xEnd+=1;
+        }
+        this.xEnd1 = xEnd;
+        this.yEnd1 = yEnd;
+    }
+    public void setAssignment(Assignment assignment) {
+        this.assignment = assignment;
+    }
+
     public void setReady(){
         if(c1 && c2){
             timer.stop();

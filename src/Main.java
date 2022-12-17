@@ -55,17 +55,16 @@ public class Main {
             JSONObject o = jsonAssignments.getJSONObject(i);
             int slotId = o.getInt("slot_id");
             int container_id = o.getInt("container_id");
-            Assignment assignment = new Assignment(slotId, container_id);
+            Assignment assignment = new Assignment(slotId, container_id,true);
             assignments.add(assignment);
             for(Container c : containers){
                 if(c.getId() == container_id ){
                     for(Slot slot : slots) {
                         if (slot.getId() == slotId) {
-                            if(c.getId() == 18){
-                                System.out.println();
-                            }
                             c.setSlot(slot);
-                            slot.addContainer(c);
+                            for(int j = slotId; j<slotId+c.getSize(); j++) {
+                                slot.addContainer(c);
+                            }
                         }
                     }
                     c.setCoordinates();
@@ -89,7 +88,7 @@ public class Main {
             cranes.add(crane);
         }
         Object obj2 = new JSONParser().parse(new FileReader("./input/1t/targetTerminalA_20_10_3_2_100.json"));
-        JSONTokener tokener2 = new JSONTokener(String.valueOf(obj));
+        JSONTokener tokener2 = new JSONTokener(String.valueOf(obj2));
         JSONObject object2 = new JSONObject(tokener2);
         JSONArray jsonEndAssignments = object2.getJSONArray("assignments");
         List<Assignment>endAssignments = new ArrayList<>();
@@ -97,7 +96,7 @@ public class Main {
             JSONObject o = jsonEndAssignments.getJSONObject(i);
             int slotId = o.getInt("slot_id");
             int containerId = o.getInt("container_id");
-            Assignment assignment = new Assignment(slotId,containerId);
+            Assignment assignment = new Assignment(slotId,containerId,false);
             endAssignments.add(assignment);
         }
         frame.setVisible(true);
