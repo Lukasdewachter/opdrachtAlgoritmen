@@ -84,7 +84,7 @@ public class Main {
             double yspeed = o.getDouble("yspeed");
             double xmin = o.getDouble("xmin");
             double xmax = o.getDouble("xmax");
-            Crane crane = new Crane(length,width,x,y,ymin,ymax,id,xspeed,yspeed,xmin,xmax,containerLength,containerWidth);
+            Crane crane = new Crane(length,width,x,y,ymin,ymax,id,xspeed,yspeed,xmin,xmax,containerLength,containerWidth, slots);
             cranes.add(crane);
         }
         Object obj2 = new JSONParser().parse(new FileReader("./input/3t/targetTerminalA_20_10_3_2_160.json"));

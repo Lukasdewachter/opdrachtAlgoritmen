@@ -1,13 +1,16 @@
 import java.awt.*;
 import java.awt.geom.*;
+import java.util.List;
 
 public class Crane {
-    private boolean hasContainer;
+    private boolean hasContainer,isCompleted;
     Container container;
     private int width, length, id,containerX,containerY;
-    private double  x,y,xmin, xmax, xspeed,yspeed,ymin,ymax;
+    private double  x,y,xmin, xmax, xspeed,yspeed,ymin,ymax,xEnd,yEnd;
     Color body, head;
-    public Crane(int length, int width, double x, double y, double ymin, double ymax,int id,double xspeed,double yspeed,double xmin,double xmax, int containerX, int containerY){
+    Assignment currentAssignment;
+    List<Slot> slots;
+    public Crane(int length, int width, double x, double y, double ymin, double ymax,int id,double xspeed,double yspeed,double xmin,double xmax, int containerX, int containerY, List<Slot> slots){
         this.width = width;
         this.length = length;
         this.x=x;
@@ -23,6 +26,10 @@ public class Crane {
         this.hasContainer = false;
         this.containerX = containerX;
         this.containerY = containerY;
+        this.currentAssignment=null;
+        this.slots= slots;
+        this.xEnd =0;
+        this.yEnd =0;
         body = new Color(109, 128, 161);
         head = new Color(100,149,237);
     }
@@ -36,7 +43,7 @@ public class Crane {
         return hasContainer;
     }
 
-    public boolean moveCrane(double xEnd, double yEnd){
+    public boolean moveCrane(){
         if(x != xEnd || y != yEnd) {
             if (x != xEnd) {
                 if (x < xEnd) {
@@ -102,8 +109,66 @@ public class Crane {
             return new double[]{maxmin, minmax};
     }*/
 
+    public void setCurrentAssignment(Assignment currentAssignment) {
+        this.currentAssignment = currentAssignment;
+        if(!hasContainer){
+            setXEnd(container.getX());
+            setYEnd(container.getY());
+        }
+        else{
+            System.out.println("heeft al container");
+        }
+    }
+    public Assignment getCurrentAssignment() {
+        return currentAssignment;
+    }
+
+    public void setHasContainer(boolean hasContainer) {
+        double tempx = slots.get(currentAssignment.getSlotId()).getXCoordinate();
+        double tempy = slots.get(currentAssignment.getSlotId()).getYCoordinate();
+        if(container.getSize()==2){
+            tempx+=0.5;
+        }
+        if(container.getSize()==3){
+            tempx+=1;
+        }
+        setXEnd(tempx);
+        setYEnd(tempy);
+        this.hasContainer = hasContainer;
+    }
+
     public void setWidth(int width) {
         this.width = width;
+    }
+
+    public Container getContainer(){
+        if(container != null){
+            return container;
+        }
+        else return null;
+    }
+    public void setCompleted(Boolean b){
+        this.isCompleted = b;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public double getXMin() {
+        return xmin;
+    }
+
+    public double getXMax() {
+        return xmax;
+    }
+
+    public void setXEnd(double xEnd) {
+        this.xEnd = xEnd;
+    }
+
+    public void setYEnd(double yEnd) {
+        this.yEnd = yEnd;
     }
 
     public void setLength(int length) {
