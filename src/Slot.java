@@ -59,6 +59,9 @@ public class Slot {
         }
         return null;
     }
+    public Boolean hasContainers(){
+        return !containerStack.isEmpty();
+    }
     //kijken welke container vanonder zit
     public Container getBottomContainer(){
         if(!containerStack.isEmpty()){

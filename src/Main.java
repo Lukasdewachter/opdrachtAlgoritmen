@@ -19,7 +19,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         List<Container> containers = new LinkedList<>();
         List<Slot> slots = new ArrayList<>();
-        Object obj = new JSONParser().parse(new FileReader("./input/1t/TerminalA_20_10_3_2_100.json"));
+        Object obj = new JSONParser().parse(new FileReader("./input/3t/TerminalA_20_10_3_2_160.json"));
         JSONTokener tokener = new JSONTokener(String.valueOf(obj));
         JSONObject object = new JSONObject(tokener);
         int startHeight = object.getInt("maxheight");
@@ -87,7 +87,7 @@ public class Main {
             Crane crane = new Crane(length,width,x,y,ymin,ymax,id,xspeed,yspeed,xmin,xmax,containerLength,containerWidth);
             cranes.add(crane);
         }
-        Object obj2 = new JSONParser().parse(new FileReader("./input/1t/targetTerminalA_20_10_3_2_100.json"));
+        Object obj2 = new JSONParser().parse(new FileReader("./input/3t/targetTerminalA_20_10_3_2_160.json"));
         JSONTokener tokener2 = new JSONTokener(String.valueOf(obj2));
         JSONObject object2 = new JSONObject(tokener2);
         JSONArray jsonEndAssignments = object2.getJSONArray("assignments");

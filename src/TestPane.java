@@ -153,9 +153,11 @@ class TestPane extends JPanel {
                 System.out.println("Slot "+sl.getId()+" Heeft niet juiste hoogte");
                 return false;
             }
-            if(sl.getTopContainer().getSize()>container.getSize()){
-                System.out.println("Bovenste Container is te groot");
-                return false;
+            if(sl.hasContainers()) {
+                if (sl.getTopContainer().getSize() > container.getSize()) {
+                    System.out.println("Bovenste Container is te groot");
+                    return false;
+                }
             }
             if(sl.getYCoordinate() != yCoordinate){
                 System.out.println("Slot "+sl.getId()+" Heeft niet juiste y coordinaat");
