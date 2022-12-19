@@ -54,7 +54,13 @@ public class Crane {
                 }
                 //setX(x);
                 if(container != null){
-                    container.setX(x);
+                    if(container.getSize() ==1){
+                        container.setX(x);
+                    } else if (container.getSize()==2) {
+                        container.setX(x-0.5);
+                    } else if (container.getSize()==3) {
+                        container.setX(x-1);
+                    }
                 }
             }
             if (y != yEnd) {
@@ -73,6 +79,7 @@ public class Crane {
                 }
                 if(container != null){
                     container.setY(y);
+
                 }
 
             }
@@ -114,5 +121,8 @@ public class Crane {
         g2d.fill(l);
         g2d.setColor(Color.BLACK);
         g2d.drawString("Crane "+(id +1)+": "+Double.toString(x)+" Y: "+Double.toString(y), 100+500* id,30);
+        g2d.setColor(Color.RED);
+        Rectangle2D.Double maxRect = new Rectangle2D.Double(50+(containerX*xmin),50+(containerY*ymin),(containerX*(xmax-xmin)),(containerY*(ymax-ymin)));
+        g2d.draw(maxRect);
     }
 }

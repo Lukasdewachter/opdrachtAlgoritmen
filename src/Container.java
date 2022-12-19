@@ -35,9 +35,9 @@ public class Container {
     public double getX() {
         if(size ==1){
             return slot.getXCoordinate();
-        } else if (length==2) {
+        } else if (size==2) {
             return (slot.getXCoordinate()+0.5);
-        } else if (length==3) {
+        } else if (size==3) {
             return (slot.getXCoordinate()+1);
         }
         else{

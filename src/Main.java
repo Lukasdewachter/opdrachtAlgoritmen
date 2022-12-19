@@ -63,7 +63,7 @@ public class Main {
                         if (slot.getId() == slotId) {
                             c.setSlot(slot);
                             for(int j = slotId; j<slotId+c.getSize(); j++) {
-                                slot.addContainer(c);
+                                slots.get(j).addContainer(c);
                             }
                         }
                     }

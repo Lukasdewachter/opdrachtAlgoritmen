@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static java.lang.Thread.sleep;
@@ -12,7 +14,7 @@ class TestPane extends JPanel {
     private Crane crane;
     private Crane crane2;
     List<Container> containers;
-    List<Assignment>assignments;
+    List<Assignment>assignments, realAssignments;
     List<Crane>cranes;
     Assignment assignment;
     double xEnd1 = 0, yEnd1 =0;
@@ -29,13 +31,21 @@ class TestPane extends JPanel {
     ActionListener al;
     public TestPane(List<Assignment>assignments,List<Crane>cranes, List<Container> containers,List<Slot>slots, int length, int width,int containerX,int containerY) {
         this.assignments = assignments;
+        this.containers = containers;
+        this.realAssignments = new ArrayList<>();
+        for(Assignment as : this.assignments){
+            for(Container c : this.containers){
+                if(c.getId() == as.getContainerId()){
+                    if(c.getSlot().getId() != as.getSlotId()){
+                        realAssignments.add(as);
+                    }
+                }
+            }
+        }
         this.length = length;
         this.width=width;
-        correct = new Color(46, 255, 0);
-        normal = new Color(100,149,237);
-        this.assignment = assignments.get(0);
+        this.assignment = realAssignments.get(0);
         this.slots = slots;
-        this.containers = containers;
         this.container=null;
         this.cranes = cranes;
         this.crane = cranes.get(0);
@@ -50,20 +60,21 @@ class TestPane extends JPanel {
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
-                time ++;
                 if(!crane.getHasContainer()){
-                    while(true){
-                        Container c  = containers.get(assignment.getContainerId());
-                        Slot containerSlot = c.getSlot();
-                        Slot endSlot = slots.get(assignment.getSlotId());
-                        if(containerSlot.getId() == endSlot.getId()){
-                            assignments.remove(0);
-                            if(assignments.isEmpty())break;
-                            setAssignment(assignments.get(0));
-                        }else{
-                            setContainer(c);
-                            setEndCoordinates(assignment);
-                            break;
+                    if(container == null) {
+                        for (Container c : containers) {
+                            if (c.getId() == assignment.getContainerId()) {
+                                Slot containerSlot = c.getSlot();
+                                Slot endSlot = slots.get(assignment.getSlotId());
+                                setContainer(c);
+                                setEndCoordinates(assignment);
+                                break;
+                            }
+                        }
+                        if(container==null){
+                            c1 = true;
+                            c2 = true;
+                            setReady();
                         }
                     }
                     if(container!=null && canTakeContainer(container) && canPlaceContainer(container,assignment.getSlotId())){
@@ -75,35 +86,39 @@ class TestPane extends JPanel {
                             } catch (InterruptedException ex) {
                                 throw new RuntimeException(ex);
                             }
-                            container.getSlot().removeContainer(container);
+                            //TODO:alle slots removen
+                            Slot slot = container.getSlot();
+                            for(int i=slot.getId(); i<slot.getId()+container.getSize();i++ ){
+                                slots.get(i).removeContainer(container);
+                            }
+
                             containers.remove(containers.indexOf(container));
                             containers.add(container);
                             crane.setContainer(true, container);
                         }
-                    }
-                    else{
-                        System.out.println("Error container null");
+                    } else{
+                        if(container == null){
+                            System.out.println("Error container null");
+                        }
+
                     }
                 }
                 else if(crane.moveCrane(xEnd1, yEnd1)) {
-                        Slot newSlot = slots.get(assignment.getSlotId());
-                        container.setSlot(newSlot);
-                        newSlot.addContainer(container);
-                        assignments.remove(0);
-                        if (!assignments.isEmpty()) {
-                            setAssignment(assignments.get(0));
-                        }else{
-                            setContainer(null);
-                            crane.setContainer(false, null);
-                            c1 = true;
-                            c2=true;
-                            setReady();
-                        }
-                        try {
-                            sleep(1000);
-                        } catch (InterruptedException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                    Slot newSlot = slots.get(assignment.getSlotId());
+                    container.setSlot(newSlot);
+                    for(int i=newSlot.getId(); i<newSlot.getId()+container.getSize();i++){
+                        slots.get(i).addContainer(container);
+                    }
+                    realAssignments.remove(0);
+                    setContainer(null);
+                    crane.setContainer(false, null);
+                    if (!realAssignments.isEmpty()) {
+                        setAssignment(realAssignments.get(0));
+                    } else {
+                        c1 = true;
+                        c2 = true;
+                        setReady();
+                    }
                 }
                 /*if(crane2.moveCrane(xEnd2, yEnd2, v2, 1)) {
                     if (count2 < 4) {
@@ -120,6 +135,7 @@ class TestPane extends JPanel {
                         setReady();
                     }
                 }*/
+                time ++;
                 repaint();
             }
         };
@@ -137,7 +153,7 @@ class TestPane extends JPanel {
                 System.out.println("Slot "+sl.getId()+" Heeft niet juiste hoogte");
                 return false;
             }
-            if(sl.getTopContainer().getSize()>1){
+            if(sl.getTopContainer().getSize()>container.getSize()){
                 System.out.println("Bovenste Container is te groot");
                 return false;
             }
