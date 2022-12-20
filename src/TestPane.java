@@ -19,7 +19,6 @@ class TestPane extends JPanel {
     int containerX,containerY;
     private List<Slot>slots;
     private Timer timer;
-    private Container container;
     private Boolean c1 = false, c2 = false,containerAttached;
     private double[] restricted = {0,0};
     ActionListener al;
@@ -40,7 +39,6 @@ class TestPane extends JPanel {
         restricted[1] = length;
         this.width=width;
         this.slots = slots;
-        this.container=null;
         this.cranes = cranes;
         for(Crane c : cranes){
             if(c.getXMin() > restricted[0]){
@@ -63,7 +61,7 @@ class TestPane extends JPanel {
                 }
                 for(Crane crane : cranes) {
                     Container container = null;
-                    Assignment assignment = null;//todo: container niet meer globaal maken
+                    Assignment assignment = null;
                     if(crane.getCurrentAssignment()==null){
                         if (realAssignments.isEmpty()) {
                             crane.setCompleted(true);
@@ -79,7 +77,7 @@ class TestPane extends JPanel {
                             }
                             Slot sEnd = slots.get(as.getSlotId());
                             if(sBegin != null) {
-                                if (sEnd.getXCoordinate() < crane.getXMax() && sEnd.getXCoordinate() > crane.getXMin() && sBegin.getXCoordinate() < crane.getXMax() && sBegin.getXCoordinate() > crane.getXMin()) {
+                                if (sEnd.getXCoordinate() <= crane.getXMax() && sEnd.getXCoordinate() >= crane.getXMin() && sBegin.getXCoordinate() <= crane.getXMax() && sBegin.getXCoordinate() >= crane.getXMin()) {
                                     crane.setCurrentAssignment(as);
                                     assignment = as;
                                     realAssignments.remove(as);
@@ -94,8 +92,8 @@ class TestPane extends JPanel {
                                                 break;
                                             }
                                         }
+                                        break;
                                     }
-                                    break;
                                 }
                             }
                         }
@@ -130,7 +128,6 @@ class TestPane extends JPanel {
                                 for (int i = slot.getId(); i < slot.getId() + container.getSize(); i++) {
                                     slots.get(i).removeContainer(container);
                                 }
-
                                 containers.remove(containers.indexOf(container));
                                 containers.add(container);
                                 crane.setHasContainer(true);
@@ -263,15 +260,8 @@ class TestPane extends JPanel {
     protected void paintComponent(Graphics g) {
         g2d = (Graphics2D) g;
         super.paintComponent(g);
-        // g2d.setColor(Color.RED);
-        //Rectangle2D rect = new Rectangle2D.Double(500,50,200,200);
-        //g2d.fill(rect);
         g.setColor(Color.black);
         g2d.drawString("Time: "+time,500,20);
-        //g2d.drawString("Current task 1: C:"+Integer.toString((int) xEnd1)+"   R: "+Integer.toString((int) yEnd1)+" " +
-        //        "     Speed X:"+Integer.toString((int) v1)+"  Y: "+Integer.toString((int) yDelta1),100,10);
-        //g2d.drawString("Current task 2: C:"+Integer.toString((int) xEnd2)+"   R: "+Integer.toString((int) yEnd2)+" " +
-        //       "     Speed X:"+Integer.toString((int) v2)+"  Y: "+Integer.toString((int) yDelta2),600,10);
         if(containerY>100){
             setContainerY(50);
         }

@@ -11,6 +11,7 @@ public class Crane {
     Assignment currentAssignment;
     List<Slot> slots;
     List<Container>containers;
+
     public Crane(int length, int width, double x, double y, double ymin, double ymax,int id,double xspeed,double yspeed,double xmin,double xmax, int containerX, int containerY, List<Slot> slots,List<Container>containers){
         this.containers = containers;
         this.width = width;
@@ -199,7 +200,7 @@ public class Crane {
         }
         g2d.setColor(Color.RED);
         //todo: juist maken
-        Rectangle2D.Double maxRect = new Rectangle2D.Double(50+(containerX*xmin),50+(containerY*ymin),(containerX*(xmax-xmin)),(containerY*(ymax-ymin)));
+        Rectangle2D.Double maxRect = new Rectangle2D.Double(50+(containerX*xmin),50+(containerY*ymin),(containerX*((xmax)-xmin)),(containerY*(ymax-ymin)));
         g2d.draw(maxRect);
     }
 }
