@@ -52,6 +52,7 @@ public class Crane {
 
     public boolean moveCrane(){
         double distance=calculateDistance(0);
+        //todo : maken dat de kraan ook aan de kant gaat als dit nodig is.
         Boolean safe = true;
         if(safe) {
             if (x != xEnd || y != yEnd) {
