@@ -32,18 +32,17 @@ public class Slot {
         containerStack.push(container);
     }
     //container verwijderen van slot
-    public Container removeContainer(Container container) {
+    public void removeContainer(Container container) {
         container.setIsTop(false);
         container.setZCoordinate((int) (container.getZCoordinate() - 1));
-        if (containerStack.peek().getId() == container.getId()) {
-            containerStack.pop();
-        } else {
-            return null;
+        if(!containerStack.isEmpty()) {
+            if (containerStack.peek().getId() == container.getId()) {
+                containerStack.pop();
+            }
+            if (!containerStack.isEmpty()) {
+                containerStack.peek().setIsTop(true);
+            }
         }
-        if (!containerStack.isEmpty()) {
-            containerStack.peek().setIsTop(true);
-        }
-        return container;
     }
     //controleren of het de max hoogte niet overschreidt
     public boolean safeHeight(int height) {

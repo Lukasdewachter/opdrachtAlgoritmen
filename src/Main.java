@@ -55,7 +55,7 @@ public class Main {
             JSONObject o = jsonAssignments.getJSONObject(i);
             int slotId = o.getInt("slot_id");
             int container_id = o.getInt("container_id");
-            Assignment assignment = new Assignment(slotId, container_id,true);
+            Assignment assignment = new Assignment(slotId, container_id,false);
             assignments.add(assignment);
             for(Container c : containers){
                 if(c.getId() == container_id ){
@@ -84,7 +84,7 @@ public class Main {
             double yspeed = o.getDouble("yspeed");
             double xmin = o.getDouble("xmin");
             double xmax = o.getDouble("xmax");
-            Crane crane = new Crane(length,width,x,y,ymin,ymax,id,xspeed,yspeed,xmin,xmax,containerLength,containerWidth, slots);
+            Crane crane = new Crane(length,width,x,y,ymin,ymax,id,xspeed,yspeed,xmin,xmax,containerLength,containerWidth, slots,containers);
             cranes.add(crane);
         }
         Object obj2 = new JSONParser().parse(new FileReader("./input/3t/targetTerminalA_20_10_3_2_160.json"));
@@ -104,7 +104,6 @@ public class Main {
         frame.add(testPane);
         frame.setPreferredSize(new Dimension(1650,1080));
         frame.pack();
-
     }
 }
 

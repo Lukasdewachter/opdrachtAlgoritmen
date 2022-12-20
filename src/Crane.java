@@ -10,7 +10,9 @@ public class Crane {
     Color body, head;
     Assignment currentAssignment;
     List<Slot> slots;
-    public Crane(int length, int width, double x, double y, double ymin, double ymax,int id,double xspeed,double yspeed,double xmin,double xmax, int containerX, int containerY, List<Slot> slots){
+    List<Container>containers;
+    public Crane(int length, int width, double x, double y, double ymin, double ymax,int id,double xspeed,double yspeed,double xmin,double xmax, int containerX, int containerY, List<Slot> slots,List<Container>containers){
+        this.containers = containers;
         this.width = width;
         this.length = length;
         this.x=x;
@@ -44,54 +46,56 @@ public class Crane {
     }
 
     public boolean moveCrane(){
-        if(x != xEnd || y != yEnd) {
-            if (x != xEnd) {
-                if (x < xEnd) {
-                    if (x +xspeed >xEnd) {
-                        x = xEnd;
+        if(!isCompleted) {
+            if (x != xEnd || y != yEnd) {
+                if (x != xEnd) {
+                    if (x < xEnd) {
+                        if (x + xspeed > xEnd) {
+                            x = xEnd;
+                        } else {
+                            x += xspeed;
+                        }
                     } else {
-                        x += xspeed;
+                        if (x - xspeed < xEnd) {
+                            x = xEnd;
+                        } else {
+                            x -= xspeed;
+                        }
                     }
-                } else {
-                    if (x - xspeed < xEnd) {
-                        x = xEnd;
-                    } else {
-                        x -= xspeed;
+                    //setX(x);
+                    if (hasContainer) {
+                        if (container.getSize() == 1) {
+                            container.setX(x);
+                        } else if (container.getSize() == 2) {
+                            container.setX(x - 0.5);
+                        } else if (container.getSize() == 3) {
+                            container.setX(x - 1);
+                        }
                     }
                 }
-                //setX(x);
-                if(container != null){
-                    if(container.getSize() ==1){
-                        container.setX(x);
-                    } else if (container.getSize()==2) {
-                        container.setX(x-0.5);
-                    } else if (container.getSize()==3) {
-                        container.setX(x-1);
-                    }
-                }
-            }
-            if (y != yEnd) {
-                if (y < yEnd) {
-                    if (y + yspeed > yEnd) {
-                        y = yEnd;
+                if (y != yEnd) {
+                    if (y < yEnd) {
+                        if (y + yspeed > yEnd) {
+                            y = yEnd;
+                        } else {
+                            y += yspeed;
+                        }
                     } else {
-                        y += yspeed;
+                        if (y - yspeed < yEnd) {
+                            y = yEnd;
+                        } else {
+                            y -= yspeed;
+                        }
                     }
-                } else {
-                    if (y - yspeed < yEnd) {
-                        y = yEnd;
-                    } else {
-                        y -= yspeed;
+                    if (hasContainer) {
+                        container.setY(y);
+
                     }
-                }
-                if(container != null){
-                    container.setY(y);
 
                 }
-
+            } else {
+                return true;
             }
-        }else{
-            return true;
         }
         return false;
     }
@@ -111,12 +115,17 @@ public class Crane {
 
     public void setCurrentAssignment(Assignment currentAssignment) {
         this.currentAssignment = currentAssignment;
-        if(!hasContainer){
-            setXEnd(container.getX());
-            setYEnd(container.getY());
-        }
-        else{
-            System.out.println("heeft al container");
+        if(currentAssignment != null) {
+            if (!hasContainer) {
+                for(Container c : containers){
+                    if(c.getId() == currentAssignment.getContainerId()){
+                        setXEnd(c.getX());
+                        setYEnd(c.getY());
+                    }
+                }
+            } else {
+                System.out.println("heeft al container");
+            }
         }
     }
     public Assignment getCurrentAssignment() {
@@ -185,8 +194,11 @@ public class Crane {
         g2d.setColor(head);
         g2d.fill(l);
         g2d.setColor(Color.BLACK);
-        g2d.drawString("Crane "+(id +1)+": "+Double.toString(x)+" Y: "+Double.toString(y), 100+500* id,30);
+        if(currentAssignment != null) {
+            g2d.drawString("Crane " + (id + 1) + ": " + Double.toString(x) + " Y: " + Double.toString(y) + "        Assignment: " + Integer.toString(currentAssignment.getContainerId()) + " to slot " + Integer.toString(currentAssignment.getSlotId()), 100 + 500 * id, 30);
+        }
         g2d.setColor(Color.RED);
+        //todo: juist maken
         Rectangle2D.Double maxRect = new Rectangle2D.Double(50+(containerX*xmin),50+(containerY*ymin),(containerX*(xmax-xmin)),(containerY*(ymax-ymin)));
         g2d.draw(maxRect);
     }

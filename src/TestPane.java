@@ -11,23 +11,17 @@ import static java.lang.Thread.sleep;
 class TestPane extends JPanel {
     public Graphics2D g2d;
     private Color normal, correct;
-    private Crane crane;
     private Crane crane2;
     List<Container> containers;
     List<Assignment>assignments, realAssignments;
     List<Crane>cranes;
-    Assignment assignment;
-    double xEnd1 = 0, yEnd1 =0;
-    double xEnd2 = 0, yEnd2 =0;
-    double xMax=0, xMax2=5;
-    double xMin=4, xMin2=8;
-    int count1 = 0,count2=0;
     int length,width,time=0;
     int containerX,containerY;
     private List<Slot>slots;
     private Timer timer;
     private Container container;
     private Boolean c1 = false, c2 = false,containerAttached;
+    private double[] restricted = {0,0};
     ActionListener al;
     public TestPane(List<Assignment>assignments,List<Crane>cranes, List<Container> containers,List<Slot>slots, int length, int width,int containerX,int containerY) {
         this.assignments = assignments;
@@ -43,12 +37,19 @@ class TestPane extends JPanel {
             }
         }
         this.length = length;
+        restricted[1] = length;
         this.width=width;
-        this.assignment = realAssignments.get(0);
         this.slots = slots;
         this.container=null;
         this.cranes = cranes;
-        this.crane = cranes.get(0);
+        for(Crane c : cranes){
+            if(c.getXMin() > restricted[0]){
+                restricted[0] = c.getXMin();
+            }
+            if(c.getXMax() < restricted[1]){
+                restricted[1] = c.getXMax();
+            }
+        }
         //if(cranes.size()>1)this.crane2=cranes.get(1);
         this.containerX = containerX;
         this.containerY = containerY;
@@ -56,30 +57,60 @@ class TestPane extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    sleep(200);
+                    sleep(1000);
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
-                for(Crane cr : cranes) {
-                    setCrane(cr);
-                    if(cr.getCurrentAssignment()==null){
-                        for(Assignment as : realAssignments){
-                            if (slots.get(as.getSlotId()).getXCoordinate()<crane.getXMax() && slots.get(as.getSlotId()).getXCoordinate()>crane.getXMin() && ){
-                                //TODo: check if container is in constraints and then give crane the assignemnt
+                for(Crane crane : cranes) {
+                    Container container = null;
+                    Assignment assignment = null;//todo: container niet meer globaal maken
+                    if(crane.getCurrentAssignment()==null){
+                        if (realAssignments.isEmpty()) {
+                            crane.setCompleted(true);
+                            checkReady();
+                        }
+                        for(Assignment as : realAssignments) {
+                            Slot sBegin = null;
+                            for (Container c : containers) {
+                                if (c.getId() == as.getContainerId()) {
+                                    sBegin = slots.get(c.getSlot().getId());
+                                    break;
+                                }
+                            }
+                            Slot sEnd = slots.get(as.getSlotId());
+                            if(sBegin != null) {
+                                if (sEnd.getXCoordinate() < crane.getXMax() && sEnd.getXCoordinate() > crane.getXMin() && sBegin.getXCoordinate() < crane.getXMax() && sBegin.getXCoordinate() > crane.getXMin()) {
+                                    crane.setCurrentAssignment(as);
+                                    assignment = as;
+                                    realAssignments.remove(as);
+                                    break;
+                                } else if (sBegin.getXCoordinate() < crane.getXMax() && sBegin.getXCoordinate() > crane.getXMin()) {
+                                    if(sBegin.getXCoordinate() < restricted[0] || sBegin.getXCoordinate() > restricted[1]) {
+                                        for (Container c : containers) {
+                                            if (c.getId() == as.getContainerId()) {
+                                                Assignment newAssignment = findPlaceInRestricted(c, crane);
+                                                crane.setCurrentAssignment(newAssignment);
+                                                assignment = newAssignment;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                }
                             }
                         }
                     }else {
-                        setContainer(cr.getContainer());
+                        container = crane.getContainer();
+                        assignment = crane.getCurrentAssignment();
                     }
-                    if (!crane.getHasContainer()) {
+                    if (!crane.getHasContainer() && assignment != null) {
                         if (container == null) {
                             for (Container c : containers) {
                                 if (c.getId() == assignment.getContainerId()) {
                                     Slot containerSlot = c.getSlot();
                                     Slot endSlot = slots.get(assignment.getSlotId());
-                                    setContainer(c);
+                                    container = c;
                                     crane.setContainer(false,container);
-                                    crane.setCurrentAssignment(assignment);
                                     break;
                                 }
                             }
@@ -88,14 +119,13 @@ class TestPane extends JPanel {
                                 checkReady();
                             }
                         }
-                        if (container != null && canTakeContainer(container) && canPlaceContainer(container, assignment.getSlotId())) {
+                        if (container != null && canTakeContainer(container) && canPlaceContainer(container, assignment.getSlotId()) && assignment != null) {
                             if (crane.moveCrane()) {
                                 try {
                                     sleep(1000);
                                 } catch (InterruptedException ex) {
                                     throw new RuntimeException(ex);
                                 }
-                                //TODO:alle slots removen
                                 Slot slot = container.getSlot();
                                 for (int i = slot.getId(); i < slot.getId() + container.getSize(); i++) {
                                     slots.get(i).removeContainer(container);
@@ -111,20 +141,15 @@ class TestPane extends JPanel {
                             }
 
                         }
-                    } else if (crane.moveCrane()) {
+                    } else if (crane.moveCrane() && assignment!=null) {
                         Slot newSlot = slots.get(crane.getCurrentAssignment().getSlotId());
                         container.setSlot(newSlot);
                         for (int i = newSlot.getId(); i < newSlot.getId() + container.getSize(); i++) {
                             slots.get(i).addContainer(container);
                         }
-                        realAssignments.remove(0);
-                        setContainer(null);
+                        crane.getCurrentAssignment().setActive(false);
                         crane.setContainer(false, null);
                         crane.setCurrentAssignment(null);
-                        if (realAssignments.isEmpty()) {
-                            crane.setCompleted(true);
-                            checkReady();
-                        }
                     }
                 }
                 time ++;
@@ -133,6 +158,45 @@ class TestPane extends JPanel {
         };
         timer = new Timer(10,al);
         timer.start();
+    }
+
+    public Assignment findPlaceInRestricted(Container container, Crane crane){
+        int x=container.getSlot().getXCoordinate();
+        int y=container.getSlot().getYCoordinate();
+        while(true){
+            Slot slot = getSlotWithCoords(x,y);
+            if(x>restricted[0] && x<restricted[1] && canPlaceContainer(container,slot.getId())){
+                return new Assignment(slot.getId(),container.getId(),false);
+            }else {
+                if(crane.getXMax() < restricted[1]){
+                    x++;
+                    if(x>restricted[1]){
+                        x = (int)restricted[0];
+                        y++;
+                        if(y > width){
+                            y=0;
+                        }
+                    }
+                }else{
+                    x--;
+                    if(x<restricted[0]){
+                        x = (int)restricted[1];
+                        y++;
+                        if(y > width){
+                            y=0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public Slot getSlotWithCoords(int x, int y){
+        for (Slot s : slots){
+            if(s.getXCoordinate() == x && s.getYCoordinate()==y){
+                return s;
+            }
+        }
+        return null;
     }
     public Boolean canPlaceContainer(Container container, int endSlotId){
         Slot s =  slots.get(endSlotId);
@@ -164,10 +228,12 @@ class TestPane extends JPanel {
         int heigth = s.getStackSize();
         for(int i=idSlot; i<idSlot+container.getSize();i++){
             Slot sl = slots.get(i);
-            if(s.getTopContainer().getId() != container.getId()){
-                System.out.println("Slot "+sl.getId()+" Heeft een andere container bovenaan");
-                //TODO: fixen dat bovenste container verplaatst word later.
-                return false;
+            if(s.getTopContainer() !=null) {
+                if (s.getTopContainer().getId() != container.getId()) {
+                    System.out.println("Slot " + sl.getId() + " Heeft een andere container bovenaan");
+                    //TODO: fixen dat bovenste container verplaatst word later.
+                    return false;
+                }
             }
             if(sl.getYCoordinate() != yCoordinate){
                 System.out.println("Slot "+sl.getId()+" Heeft niet juiste y coordinaat");
@@ -175,14 +241,6 @@ class TestPane extends JPanel {
         }
         return true;
     }
-
-    public void setCrane(Crane c){
-        this.crane=c;
-    }
-    public void setAssignment(Assignment assignment) {
-        this.assignment = assignment;
-    }
-
     public void checkReady(){
         Boolean ready = true;
         for(Crane c : cranes){
@@ -194,12 +252,6 @@ class TestPane extends JPanel {
             timer.stop();
         }
     }
-
-    public void setContainer(Container container) {
-        this.container = container;
-    }
-
-
     public void setContainerX(int containerX) {
         this.containerX = containerX;
     }
@@ -257,8 +309,5 @@ class TestPane extends JPanel {
                 RenderingHints.VALUE_ANTIALIAS_ON
         );
         g2d.setRenderingHints(rh);
-/*
-        //crane2.drawCrane(g2d);
-    */
     }
 }
