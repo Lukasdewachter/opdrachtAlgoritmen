@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static java.lang.Thread.activeCount;
 import static java.lang.Thread.sleep;
 
 class TestPane extends JPanel {
@@ -19,7 +20,7 @@ class TestPane extends JPanel {
     int containerX,containerY;
     private List<Slot>slots;
     private Timer timer;
-    private Boolean c1 = false, c2 = false,containerAttached;
+    private Boolean c1 = false, c2 = false,containerAttached, firstTime = true;
     private double[] restricted = {0,0};
     ActionListener al;
     public TestPane(List<Assignment>assignments,List<Crane>cranes, List<Container> containers,List<Slot>slots, int length, int width,int containerX,int containerY) {
@@ -54,8 +55,16 @@ class TestPane extends JPanel {
         al = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(firstTime){
+                    try{
+                        sleep(10000);
+                        firstTime = false;
+                    }catch(InterruptedException ex){
+                        throw new RuntimeException(ex);
+                    }
+                }
                 try {
-                    sleep(1000);
+                    sleep(500);
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -119,11 +128,6 @@ class TestPane extends JPanel {
                         }
                         if (container != null && canTakeContainer(container) && canPlaceContainer(container, assignment.getSlotId()) && assignment != null) {
                             if (crane.moveCrane()) {
-                                try {
-                                    sleep(1000);
-                                } catch (InterruptedException ex) {
-                                    throw new RuntimeException(ex);
-                                }
                                 Slot slot = container.getSlot();
                                 for (int i = slot.getId(); i < slot.getId() + container.getSize(); i++) {
                                     slots.get(i).removeContainer(container);
@@ -247,6 +251,19 @@ class TestPane extends JPanel {
         }
         if(ready){
             timer.stop();
+            List<Assignment>copyAssign = new ArrayList<>(List.copyOf(assignments));
+            for(Container c : containers){
+                Slot cSlot = c.getSlot();
+                for(Assignment as : assignments){
+                    if(as.getContainerId() == c.getId() && as.getSlotId() == cSlot.getId()){
+                        copyAssign.remove(as);
+                        break;
+                    }
+                }
+            }
+            if(copyAssign.isEmpty()){
+                System.out.println("deze ordening klopt!");
+            }
         }
     }
     public void setContainerX(int containerX) {
