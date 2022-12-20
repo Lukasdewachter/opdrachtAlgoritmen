@@ -17,6 +17,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        boolean target = true;
         List<Container> containers = new LinkedList<>();
         List<Slot> slots = new ArrayList<>();
         Object obj = new JSONParser().parse(new FileReader("./input/3t/TerminalA_20_10_3_2_160.json"));
@@ -90,17 +91,19 @@ public class Main {
         for(Crane c : cranes){
             c.setCranes(cranes);
         }
-        Object obj2 = new JSONParser().parse(new FileReader("./input/3t/targetTerminalA_20_10_3_2_160.json"));
-        JSONTokener tokener2 = new JSONTokener(String.valueOf(obj2));
-        JSONObject object2 = new JSONObject(tokener2);
-        JSONArray jsonEndAssignments = object2.getJSONArray("assignments");
-        List<Assignment>endAssignments = new ArrayList<>();
-        for(int i=0; i<jsonEndAssignments.length();i++) {
-            JSONObject o = jsonEndAssignments.getJSONObject(i);
-            int slotId = o.getInt("slot_id");
-            int containerId = o.getInt("container_id");
-            Assignment assignment = new Assignment(slotId,containerId,false);
-            endAssignments.add(assignment);
+        List<Assignment> endAssignments = new ArrayList<>();
+        if(target) {
+            Object obj2 = new JSONParser().parse(new FileReader("./input/3t/targetTerminalA_20_10_3_2_160.json"));
+            JSONTokener tokener2 = new JSONTokener(String.valueOf(obj2));
+            JSONObject object2 = new JSONObject(tokener2);
+            JSONArray jsonEndAssignments = object2.getJSONArray("assignments");
+            for (int i = 0; i < jsonEndAssignments.length(); i++) {
+                JSONObject o = jsonEndAssignments.getJSONObject(i);
+                int slotId = o.getInt("slot_id");
+                int containerId = o.getInt("container_id");
+                Assignment assignment = new Assignment(slotId, containerId, false);
+                endAssignments.add(assignment);
+            }
         }
         frame.setVisible(true);
         TestPane testPane = new TestPane(endAssignments,cranes,containers,slots,length,width,containerLength,containerWidth);

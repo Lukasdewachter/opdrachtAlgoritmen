@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static java.lang.Thread.activeCount;
 import static java.lang.Thread.sleep;
 
 class TestPane extends JPanel {
@@ -18,28 +17,34 @@ class TestPane extends JPanel {
     List<Crane>cranes;
     int length,width,time=0;
     int containerX,containerY;
-    private List<Slot>slots;
+    private List<Slot>slots, notVisitedSlots;
     private Timer timer;
-    private Boolean c1 = false, c2 = false,containerAttached, firstTime = true;
+    private Boolean c1 = false, c2 = false,containerAttached, heightMode, firstTime = true;
     private double[] restricted = {0,0};
     ActionListener al;
     public TestPane(List<Assignment>assignments,List<Crane>cranes, List<Container> containers,List<Slot>slots, int length, int width,int containerX,int containerY) {
         this.assignments = assignments;
-        this.containers = containers;
         this.realAssignments = new ArrayList<>();
-        for(Assignment as : this.assignments){
-            for(Container c : this.containers){
-                if(c.getId() == as.getContainerId()){
-                    if(c.getSlot().getId() != as.getSlotId()){
-                        realAssignments.add(as);
+        this.slots = slots;
+        if(assignments.isEmpty()){
+            this.heightMode = true;
+            this.notVisitedSlots = new LinkedList<>(List.copyOf(slots));
+        }else{
+            this.heightMode = false;
+            for(Assignment as : this.assignments){
+                for(Container c : this.containers){
+                    if(c.getId() == as.getContainerId()){
+                        if(c.getSlot().getId() != as.getSlotId()){
+                            realAssignments.add(as);
+                        }
                     }
                 }
             }
         }
+        this.containers = containers;
         this.length = length;
         restricted[1] = length;
         this.width=width;
-        this.slots = slots;
         this.cranes = cranes;
         for(Crane c : cranes){
             if(c.getXMin() > restricted[0]){
@@ -71,44 +76,50 @@ class TestPane extends JPanel {
                 for(Crane crane : cranes) {
                     Container container = null;
                     Assignment assignment = null;
-                    if(crane.getCurrentAssignment()==null){
-                        if (realAssignments.isEmpty()) {
-                            crane.setCompleted(true);
-                            checkReady();
-                        }
-                        for(Assignment as : realAssignments) {
-                            Slot sBegin = null;
-                            for (Container c : containers) {
-                                if (c.getId() == as.getContainerId()) {
-                                    sBegin = slots.get(c.getSlot().getId());
-                                    break;
-                                }
+                    if(crane.getCurrentAssignment()==null) {
+                        if (!heightMode) {
+                            if (realAssignments.isEmpty()) {
+                                crane.setCompleted(true);
+                                checkReady();
                             }
-                            Slot sEnd = slots.get(as.getSlotId());
-                            if(sBegin != null) {
-                                if (sEnd.getXCoordinate() <= crane.getXMax() && sEnd.getXCoordinate() >= crane.getXMin() && sBegin.getXCoordinate() <= crane.getXMax() && sBegin.getXCoordinate() >= crane.getXMin()) {
-                                    crane.setCurrentAssignment(as);
-                                    assignment = as;
-                                    realAssignments.remove(as);
-                                    break;
-                                } else if (sBegin.getXCoordinate() < crane.getXMax() && sBegin.getXCoordinate() > crane.getXMin()) {
-                                    if(sBegin.getXCoordinate() < restricted[0] || sBegin.getXCoordinate() > restricted[1]) {
-                                        for (Container c : containers) {
-                                            if (c.getId() == as.getContainerId()) {
-                                                Assignment newAssignment = findPlaceInRestricted(c, crane);
-                                                crane.setCurrentAssignment(newAssignment);
-                                                assignment = newAssignment;
-                                                break;
-                                            }
-                                        }
+                            for (Assignment as : realAssignments) {
+                                Slot sBegin = null;
+                                for (Container c : containers) {
+                                    if (c.getId() == as.getContainerId()) {
+                                        sBegin = slots.get(c.getSlot().getId());
                                         break;
                                     }
                                 }
+                                Slot sEnd = slots.get(as.getSlotId());
+                                if (sBegin != null) {
+                                    if (sEnd.getXCoordinate() <= crane.getXMax() && sEnd.getXCoordinate() >= crane.getXMin() && sBegin.getXCoordinate() <= crane.getXMax() && sBegin.getXCoordinate() >= crane.getXMin()) {
+                                        crane.setCurrentAssignment(as);
+                                        assignment = as;
+                                        realAssignments.remove(as);
+                                        break;
+                                    } else if (sBegin.getXCoordinate() < crane.getXMax() && sBegin.getXCoordinate() > crane.getXMin()) {
+                                        if (sBegin.getXCoordinate() < restricted[0] || sBegin.getXCoordinate() > restricted[1]) {
+                                            for (Container c : containers) {
+                                                if (c.getId() == as.getContainerId()) {
+                                                    Assignment newAssignment = findPlaceInRestricted(c, crane);
+                                                    crane.setCurrentAssignment(newAssignment);
+                                                    assignment = newAssignment;
+                                                    break;
+                                                }
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
                             }
+                        } else {
+                            container = crane.getContainer();
+                            assignment = crane.getCurrentAssignment();
                         }
-                    }else {
-                        container = crane.getContainer();
-                        assignment = crane.getCurrentAssignment();
+                    }else{
+                        for(Slot slot  : notVisitedSlots){
+                            if(slot.getStackSize()>)
+                        }
                     }
                     if (!crane.getHasContainer() && assignment != null) {
                         if (container == null) {
