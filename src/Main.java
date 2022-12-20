@@ -87,6 +87,9 @@ public class Main {
             Crane crane = new Crane(length,width,x,y,ymin,ymax,id,xspeed,yspeed,xmin,xmax,containerLength,containerWidth, slots,containers);
             cranes.add(crane);
         }
+        for(Crane c : cranes){
+            c.setCranes(cranes);
+        }
         Object obj2 = new JSONParser().parse(new FileReader("./input/3t/targetTerminalA_20_10_3_2_160.json"));
         JSONTokener tokener2 = new JSONTokener(String.valueOf(obj2));
         JSONObject object2 = new JSONObject(tokener2);

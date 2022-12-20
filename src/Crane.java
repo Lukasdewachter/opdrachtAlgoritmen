@@ -11,6 +11,7 @@ public class Crane {
     Assignment currentAssignment;
     List<Slot> slots;
     List<Container>containers;
+    List<Crane>cranes;
 
     public Crane(int length, int width, double x, double y, double ymin, double ymax,int id,double xspeed,double yspeed,double xmin,double xmax, int containerX, int containerY, List<Slot> slots,List<Container>containers){
         this.containers = containers;
@@ -33,6 +34,7 @@ public class Crane {
         this.slots= slots;
         this.xEnd =0;
         this.yEnd =0;
+        this.cranes=null;
         body = new Color(109, 128, 161);
         head = new Color(100,149,237);
     }
@@ -41,22 +43,26 @@ public class Crane {
         this.hasContainer = hasContainer;
         this.container = container;
     }
-
+    public void setCranes(List<Crane>cranes){
+        this.cranes = cranes;
+    }
     public boolean getHasContainer(){
         return hasContainer;
     }
 
     public boolean moveCrane(){
-        if(!isCompleted) {
+        double distance=calculateDistance(0);
+        Boolean safe = true;
+        if(safe) {
             if (x != xEnd || y != yEnd) {
                 if (x != xEnd) {
-                    if (x < xEnd) {
+                    if (x < xEnd && calculateDistance(xspeed)>1) {
                         if (x + xspeed > xEnd) {
                             x = xEnd;
                         } else {
                             x += xspeed;
                         }
-                    } else {
+                    } else if (x > xEnd && calculateDistance(xspeed*-1)>1){
                         if (x - xspeed < xEnd) {
                             x = xEnd;
                         } else {
@@ -113,7 +119,24 @@ public class Crane {
         else
             return new double[]{maxmin, minmax};
     }*/
-
+    public double calculateDistance(double vx){
+        double distance=99;
+        for(Crane c : cranes){
+            if(c.getId() != getId()){
+                if(c.getX() < getX()){
+                    distance = (getX()+vx)-c.getX();
+                }
+                if(c.getX() > getX()){
+                    distance = c.getX()-(getX()+vx);
+                }
+                break;
+            }
+        }
+        return distance;
+    }
+    public int getId(){
+        return this.id;
+    }
     public void setCurrentAssignment(Assignment currentAssignment) {
         this.currentAssignment = currentAssignment;
         if(currentAssignment != null) {
@@ -181,6 +204,12 @@ public class Crane {
         this.yEnd = yEnd;
     }
 
+    public double getX() {
+        return x;
+    }
+    public double getY() {
+        return y;
+    }
     public void setLength(int length) {
         this.length = length;
     }
