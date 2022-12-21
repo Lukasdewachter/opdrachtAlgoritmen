@@ -18,10 +18,10 @@ public class Main {
     public static void main(String[] args) throws Exception {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        boolean target = false;
+        boolean target = true;
         HashMap<Integer, Container> containers = new HashMap<>();
         List<Slot> slots = new ArrayList<>();
-        Object obj = new JSONParser().parse(new FileReader("./input/3t/TerminalA_20_10_3_2_160.json"));
+        Object obj = new JSONParser().parse(new FileReader("./input/2mh/MH2Terminal_20_10_3_2_100.json"));
         JSONTokener tokener = new JSONTokener(String.valueOf(obj));
         JSONObject object = new JSONObject(tokener);
         int startHeight = object.getInt("maxheight");
@@ -112,6 +112,7 @@ public class Main {
         if(target){
             testPane.makeTargetHeight(targetHeight);
         }
+        testPane.startTimer();
         frame.add(testPane);
         frame.setPreferredSize(new Dimension(1650,1080));
         frame.pack();
