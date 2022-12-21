@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.geom.*;
+import java.util.HashMap;
 import java.util.List;
 
 public class Crane {
@@ -10,10 +11,10 @@ public class Crane {
     Color body, head;
     Assignment currentAssignment;
     List<Slot> slots;
-    List<Container>containers;
+    HashMap<Integer,Container> containers;
     List<Crane>cranes;
 
-    public Crane(int length, int width, double x, double y, double ymin, double ymax,int id,double xspeed,double yspeed,double xmin,double xmax, int containerX, int containerY, List<Slot> slots,List<Container>containers){
+    public Crane(int length, int width, double x, double y, double ymin, double ymax,int id,double xspeed,double yspeed,double xmin,double xmax, int containerX, int containerY, List<Slot> slots,HashMap<Integer,Container>containers){
         this.containers = containers;
         this.width = width;
         this.length = length;
@@ -140,14 +141,11 @@ public class Crane {
     }
     public void setCurrentAssignment(Assignment currentAssignment) {
         this.currentAssignment = currentAssignment;
-        if(currentAssignment != null) {
+        if (currentAssignment != null) {
             if (!hasContainer) {
-                for(Container c : containers){
-                    if(c.getId() == currentAssignment.getContainerId()){
-                        setXEnd(c.getX());
-                        setYEnd(c.getY());
-                    }
-                }
+                Container c = containers.get(currentAssignment.getContainerId());
+                setXEnd(c.getX());
+                setYEnd(c.getY());
             } else {
                 System.out.println("heeft al container");
             }

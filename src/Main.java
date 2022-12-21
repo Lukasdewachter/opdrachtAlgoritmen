@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import java.awt.*;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 /*
@@ -17,60 +18,61 @@ public class Main {
     public static void main(String[] args) throws Exception {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        boolean target = true;
-        List<Container> containers = new LinkedList<>();
+        boolean target = false;
+        HashMap<Integer, Container> containers = new HashMap<>();
         List<Slot> slots = new ArrayList<>();
         Object obj = new JSONParser().parse(new FileReader("./input/3t/TerminalA_20_10_3_2_160.json"));
         JSONTokener tokener = new JSONTokener(String.valueOf(obj));
         JSONObject object = new JSONObject(tokener);
         int startHeight = object.getInt("maxheight");
+        int targetHeight = 0;
+        if (target) {
+            targetHeight = object.getInt("targetheight");
+        }
         int length = object.getInt("length");
         int width = object.getInt("width");
-        int containerLength = 1450/(length+1);
-        int containerWidth = 780/(width+1);
+        int containerLength = 1450 / (length + 1);
+        int containerWidth = 780 / (width + 1);
         JSONArray jsonSlots = object.getJSONArray("slots");
-        for(int i=0; i<jsonSlots.length(); i++){
+        for (int i = 0; i < jsonSlots.length(); i++) {
             JSONObject o = jsonSlots.getJSONObject(i);
             int id = o.getInt("id");
             int x = o.getInt("x");
             int y = o.getInt("y");
-            Slot slot = new Slot(id,x,y,startHeight,containerLength,containerWidth);
+            Slot slot = new Slot(id, x, y, startHeight, containerLength, containerWidth);
             slots.add(slot);
         }
         JSONArray jsonContainers = object.getJSONArray("containers");
-        for(int i=0; i<jsonContainers.length();i++){
-            int red = (int)(Math.random()*256);
-            int green = (int)(Math.random()*256);
-            int blue = (int)(Math.random()*256);
-            Color color = new Color(red,green,blue);
+        for (int i = 0; i < jsonContainers.length(); i++) {
+            int red = (int) (Math.random() * 256);
+            int green = (int) (Math.random() * 256);
+            int blue = (int) (Math.random() * 256);
+            Color color = new Color(red, green, blue);
             JSONObject o = jsonContainers.getJSONObject(i);
             int id = o.getInt("id");
             int clength = o.getInt("length");
             //TODO : als lengte >1 moeten bij aansluitende slots container ook op stack
-            Container container = new Container(id,clength, color,containerLength,containerWidth);
-            containers.add(container);
+            Container container = new Container(id, clength, color, containerLength, containerWidth);
+            containers.put(id, container);
         }
         JSONArray jsonAssignments = object.getJSONArray("assignments");
-        List<Assignment>assignments = new ArrayList<>();
-        for(int i=0; i<jsonAssignments.length();i++){
+        List<Assignment> assignments = new ArrayList<>();
+        for (int i = 0; i < jsonAssignments.length(); i++) {
             JSONObject o = jsonAssignments.getJSONObject(i);
             int slotId = o.getInt("slot_id");
             int container_id = o.getInt("container_id");
-            Assignment assignment = new Assignment(slotId, container_id,false);
+            Assignment assignment = new Assignment(slotId, container_id, false);
             assignments.add(assignment);
-            for(Container c : containers){
-                if(c.getId() == container_id ){
-                    for(Slot slot : slots) {
-                        if (slot.getId() == slotId) {
-                            c.setSlot(slot);
-                            for(int j = slotId; j<slotId+c.getSize(); j++) {
-                                slots.get(j).addContainer(c);
-                            }
-                        }
+            Container c = containers.get(container_id);
+            for (Slot slot : slots) {
+                if (slot.getId() == slotId) {
+                    c.setSlot(slot);
+                    for (int j = slotId; j < slotId + c.getSize(); j++) {
+                        slots.get(j).addContainer(c);
                     }
-                    c.setCoordinates();
                 }
             }
+            c.setCoordinates();
         }
         JSONArray jsonCranes = object.getJSONArray("cranes");
         List<Crane>cranes = new ArrayList<>();
@@ -92,7 +94,7 @@ public class Main {
             c.setCranes(cranes);
         }
         List<Assignment> endAssignments = new ArrayList<>();
-        if(target) {
+        if(!target) {
             Object obj2 = new JSONParser().parse(new FileReader("./input/3t/targetTerminalA_20_10_3_2_160.json"));
             JSONTokener tokener2 = new JSONTokener(String.valueOf(obj2));
             JSONObject object2 = new JSONObject(tokener2);
@@ -107,6 +109,9 @@ public class Main {
         }
         frame.setVisible(true);
         TestPane testPane = new TestPane(endAssignments,cranes,containers,slots,length,width,containerLength,containerWidth);
+        if(target){
+            testPane.makeTargetHeight(targetHeight);
+        }
         frame.add(testPane);
         frame.setPreferredSize(new Dimension(1650,1080));
         frame.pack();
