@@ -4,10 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Crane {
-    private boolean hasContainer,isCompleted;
+    private boolean hasContainer,isCompleted, blocked;
     Container container;
     private int width, length, id,containerX,containerY;
     private double  x,y,xmin, xmax, xspeed,yspeed,ymin,ymax,xEnd,yEnd;
+    private double [] restricted;
     Color body, head;
     Assignment currentAssignment;
     List<Slot> slots;
@@ -36,6 +37,8 @@ public class Crane {
         this.xEnd =0;
         this.yEnd =0;
         this.cranes=null;
+        this.restricted = null;
+        this.blocked = false;
         body = new Color(109, 128, 161);
         head = new Color(100,149,237);
     }
@@ -53,9 +56,7 @@ public class Crane {
 
     public boolean moveCrane(){
         double distance=calculateDistance(0);
-        //todo : maken dat de kraan ook aan de kant gaat als dit nodig is.
-        Boolean safe = true;
-        if(safe) {
+        if(!blocked) {
             if (x != xEnd || y != yEnd) {
                 if (x != xEnd) {
                     if (x < xEnd && calculateDistance(xspeed)>1) {
@@ -70,6 +71,8 @@ public class Crane {
                         } else {
                             x -= xspeed;
                         }
+                    }else{
+                        setBlocked(true);
                     }
                     //setX(x);
                     if (hasContainer) {
@@ -89,12 +92,14 @@ public class Crane {
                         } else {
                             y += yspeed;
                         }
-                    } else {
+                    } else if (y > yEnd){
                         if (y - yspeed < yEnd) {
                             y = yEnd;
                         } else {
                             y -= yspeed;
                         }
+                    }else{
+                       setBlocked(true);
                     }
                     if (hasContainer) {
                         container.setY(y);
@@ -105,8 +110,38 @@ public class Crane {
             } else {
                 return true;
             }
+        }else {
+            Crane crane = null;
+            if (id == 0) {
+                crane = cranes.get(1);
+            } else if (id == 1) {
+                crane = cranes.get(0);
+            } else {
+                System.out.println("Error no crane");
+            }
+            if (crane != null) {
+                if (crane.isBlocked()) {
+                    crane.getX();
+                    if (id == 0) {
+                        x -= xspeed;
+                    }
+                    if (id == 1) {
+                        x += xspeed;
+                    }
+                }
+            }
+            setBlocked(false);
         }
         return false;
+    }
+    public void moveFromRestricted(){
+        setBlocked(false);
+        if(id ==0){
+            setXEnd(restricted[0]-2);
+        }else if(id ==1){
+            setXEnd(restricted[1]+2);
+        }
+        moveCrane();
     }
     /*
     public boolean overlapCraneArea(Crane c) {
@@ -155,6 +190,15 @@ public class Crane {
         return currentAssignment;
     }
 
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+    public boolean isBlocked() {
+        return blocked;
+    }
+    public void setRestricted(double[] restricted){
+        this.restricted = restricted;
+    }
     public void setHasContainer(boolean hasContainer) {
         double tempx = slots.get(currentAssignment.getSlotId()).getXCoordinate();
         double tempy = slots.get(currentAssignment.getSlotId()).getYCoordinate();
