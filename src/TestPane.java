@@ -193,9 +193,6 @@ class TestPane extends JPanel {
                             if(heightMode){
                                 crane.moveCrane();
                             }
-                            if (container == null) {
-                                System.out.println("Error container null");
-                            }
                         }
                     } else if (crane.moveCrane() && assignment != null) {
                         Slot newSlot = slots.get(crane.getCurrentAssignment().getSlotId());
@@ -343,6 +340,14 @@ class TestPane extends JPanel {
                 if (copyAssign.isEmpty()) {
                     System.out.println("deze ordening klopt!");
                 }
+            }else{
+                boolean correct = true;
+                for(Slot slot : slots){
+                    if(slot.getStackSize()>targetHeight){
+                        correct = false;
+                    }
+                }
+                System.out.println("De max hoogte is correct verlaagd");
             }
         }
     }
