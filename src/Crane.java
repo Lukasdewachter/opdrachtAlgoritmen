@@ -56,6 +56,9 @@ public class Crane {
 
     public boolean moveCrane(){
         double distance=calculateDistance(0);
+        if(distance>1){
+            this.blocked = false;
+        }
         if(!blocked) {
             if (x != xEnd || y != yEnd) {
                 if (x != xEnd) {
@@ -134,12 +137,49 @@ public class Crane {
         }
         return false;
     }
+    public void moveCraneOneStep(){
+        if(id == 1) {
+            if (hasContainer) {
+                if (container.getSize() == 1) {
+                    container.setX(x + xspeed);
+                } else if (container.getSize() == 2) {
+                    container.setX((x+xspeed) - 0.5);
+                } else if (container.getSize() == 3) {
+                    container.setX((x + xspeed) - 1);
+                }
+            }
+            x += xspeed;
+        }else{
+            if (hasContainer) {
+                if (container.getSize() == 1) {
+                    container.setX(x - xspeed);
+                } else if (container.getSize() == 2) {
+                    container.setX((x-xspeed) - 0.5);
+                } else if (container.getSize() == 3) {
+                    container.setX((x - xspeed) - 1);
+                }
+            }
+            x -= xspeed;
+        }
+        if(calculateDistance(0)>1){
+            this.blocked = false;
+        }
+    }
     public void moveFromRestricted(){
         setBlocked(false);
         if(id ==0){
-            setXEnd(restricted[0]-2);
+            for(Slot s : slots){
+                if(s.getXCoordinate() == restricted[0]-2 && s.getYCoordinate() == y){
+                    setCurrentAssignment(new Assignment(s.getId(),-1,false));
+                }
+            }
         }else if(id ==1){
-            setXEnd(restricted[1]+2);
+            for(Slot s : slots){
+                if(s.getXCoordinate() == restricted[1]+2 && s.getYCoordinate() == y){
+                    setCurrentAssignment(new Assignment(s.getId(),-1,false));
+                    break;
+                }
+            }
         }
         moveCrane();
     }
@@ -178,9 +218,14 @@ public class Crane {
         this.currentAssignment = currentAssignment;
         if (currentAssignment != null) {
             if (!hasContainer) {
-                Container c = containers.get(currentAssignment.getContainerId());
-                setXEnd(c.getX());
-                setYEnd(c.getY());
+                if( currentAssignment.getContainerId() != -1) {
+                    Container c = containers.get(currentAssignment.getContainerId());
+                    setXEnd(c.getX());
+                    setYEnd(c.getY());
+                }else{
+                    setXEnd(slots.get(currentAssignment.getSlotId()).getXCoordinate());
+                    setYEnd(slots.get(currentAssignment.getSlotId()).getYCoordinate());
+                }
             } else {
                 System.out.println("heeft al container");
             }
