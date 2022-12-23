@@ -16,7 +16,9 @@ public class Assignment {
     public Boolean getActive() {
         return active;
     }
-
+    public void print(){
+        System.out.println("Slot: "+slotId +"   Container: "+containerId+"   Klopt niet");
+    }
     public int getContainerId() {
         return containerId;
     }

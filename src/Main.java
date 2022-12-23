@@ -7,21 +7,27 @@ import org.json.JSONArray;
 
 import java.awt.*;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
+
 /*
     - Transformeren naar andere layouts
 */
 public class Main {
     public static void main(String[] args) throws Exception {
+        Scanner sc = new Scanner(System.in);
+        String[] inputTerminals = {"./input/1t/TerminalA_20_10_3_2_100.json","./input/2mh/MH2Terminal_20_10_3_2_100.json","./input/3t/TerminalA_20_10_3_2_160.json","./input/4mh/MH2Terminal_20_10_3_2_160.json","./input/5t/TerminalB_20_10_3_2_160.json","./input/6t/Terminal_10_10_3_1_100.json"};
+        String[] inputTargetTerminals = {"./input/1t/targetTerminalA_20_10_3_2_100.json","","./input/3t/targetTerminalA_20_10_3_2_160.json","","./input/5t/targetTerminalB_20_10_3_2_160.json","./input/6t/targetTerminal_10_10_3_1_100.json"};
+        int input = sc.nextInt() -1;
+        boolean target = true;
+        if(input == 0 || input == 2 || input == 4 || input == 5){
+            target = false;
+        }
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        boolean target = false;
         HashMap<Integer, Container> containers = new HashMap<>();
         List<Slot> slots = new ArrayList<>();
-        Object obj = new JSONParser().parse(new FileReader("./input/5t/TerminalB_20_10_3_2_160.json"));
+        Object obj = new JSONParser().parse(new FileReader(inputTerminals[input]));
         JSONTokener tokener = new JSONTokener(String.valueOf(obj));
         JSONObject object = new JSONObject(tokener);
         int startHeight = object.getInt("maxheight");
@@ -95,7 +101,7 @@ public class Main {
         }
         List<Assignment> endAssignments = new ArrayList<>();
         if(!target) {
-            Object obj2 = new JSONParser().parse(new FileReader("./input/5t/targetTerminalB_20_10_3_2_160.json"));
+            Object obj2 = new JSONParser().parse(new FileReader(inputTargetTerminals[input]));
             JSONTokener tokener2 = new JSONTokener(String.valueOf(obj2));
             JSONObject object2 = new JSONObject(tokener2);
             JSONArray jsonEndAssignments = object2.getJSONArray("assignments");

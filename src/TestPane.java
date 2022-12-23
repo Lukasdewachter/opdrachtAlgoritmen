@@ -92,15 +92,15 @@ class TestPane extends JPanel {
                         crane.moveCraneOneStep(null);
                         continue;
                     }
-                    if (crane.getCurrentAssignment() == null) {
+                    if (crane.getCurrentAssignment() == null || crane.getCurrentAssignment().getContainerId()==-1) {
                         if (!heightMode) {
                             if (realAssignments.isEmpty()) {
                                 crane.setCompleted(true);
                                 checkReady();
                             }
                             for (Assignment as : realAssignments) {
-                                if(as.getContainerId() == 66){
-                                    System.out.println();
+                                if(as.getActive()){
+                                    continue;
                                 }
                                 Container c = containers.get(as.getContainerId());
                                 Slot sBegin = slots.get(c.getSlot().getId());
@@ -111,6 +111,7 @@ class TestPane extends JPanel {
                                         if (sEnd.getXCoordinate() <= crane.getXMax() && sEnd.getXCoordinate() >= crane.getXMin() && containerXcoord <= crane.getXMax() && containerXcoord >= crane.getXMin()) {
                                             crane.setCurrentAssignment(as);
                                             assignment = as;
+                                            as.setActive(true);
                                             realAssignments.remove(as);
                                             break;
                                         } else if (containerXcoord <= crane.getXMax() && containerXcoord >= crane.getXMin()) {
@@ -181,6 +182,9 @@ class TestPane extends JPanel {
                                 assignment = ass;
                             }
                         }
+                        if(crane.getCurrentAssignment() != null ){
+                            crane.setCompleted(false);
+                        }
                     }else {
                         container = crane.getContainer();
                         assignment = crane.getCurrentAssignment();
@@ -234,6 +238,11 @@ class TestPane extends JPanel {
                             container.setSlot(newSlot);
                             for (int i = newSlot.getId(); i < newSlot.getId() + container.getSize(); i++) {
                                 slots.get(i).addContainer(container);
+                            }
+                            if(container.getId() == assignment.getContainerId() && newSlot.getId() == assignment.getSlotId()){
+                                realAssignments.remove(assignment);
+                            }else{
+                                assignment.setActive(false);
                             }
                             crane.getCurrentAssignment().setActive(false);
                             crane.setContainer(false, null);
@@ -404,18 +413,22 @@ class TestPane extends JPanel {
             }
         }
         if(ready) {
-            timer.stop();
             if(!heightMode) {
+                boolean correct = true;
                 List<Assignment> copyAssign = new ArrayList<>(List.copyOf(assignments));
                 for (Assignment as : assignments) {
                     Container c = containers.get(as.getContainerId());
                     Slot cSlot = c.getSlot();
                     if (as.getSlotId() == cSlot.getId()) {
                         copyAssign.remove(as);
+                    }else {
+                        realAssignments.add(as);
+                        correct = false;
                     }
                 }
-                if (copyAssign.isEmpty()) {
+                if (realAssignments.isEmpty() && correct) {
                     System.out.println("deze ordening klopt!");
+                    timer.stop();
                 }
             }else{
                 boolean correct = true;
@@ -425,7 +438,10 @@ class TestPane extends JPanel {
                     }
                 }
                 System.out.println("De max hoogte is correct verlaagd");
+                timer.stop();
             }
+
+
         }
     }
     public void setContainerX(int containerX) {
@@ -444,7 +460,7 @@ class TestPane extends JPanel {
         g2d = (Graphics2D) g;
         super.paintComponent(g);
         g.setColor(Color.black);
-        g2d.drawString("Time: "+time,500,20);
+        g2d.drawString("Time: "+time+"    assignments left: "+realAssignments.size(),500,20);
         if(containerY>100){
             setContainerY(50);
         }
