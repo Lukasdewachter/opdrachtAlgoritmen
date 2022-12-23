@@ -21,7 +21,7 @@ public class Main {
         boolean target = false;
         HashMap<Integer, Container> containers = new HashMap<>();
         List<Slot> slots = new ArrayList<>();
-        Object obj = new JSONParser().parse(new FileReader("./input/tt/Terminal_10_10_3_1_100.json"));
+        Object obj = new JSONParser().parse(new FileReader("./input/5t/TerminalB_20_10_3_2_160.json"));
         JSONTokener tokener = new JSONTokener(String.valueOf(obj));
         JSONObject object = new JSONObject(tokener);
         int startHeight = object.getInt("maxheight");
@@ -95,7 +95,7 @@ public class Main {
         }
         List<Assignment> endAssignments = new ArrayList<>();
         if(!target) {
-            Object obj2 = new JSONParser().parse(new FileReader("./input/tt/targetTerminal_10_10_3_1_100.json"));
+            Object obj2 = new JSONParser().parse(new FileReader("./input/5t/targetTerminalB_20_10_3_2_160.json"));
             JSONTokener tokener2 = new JSONTokener(String.valueOf(obj2));
             JSONObject object2 = new JSONObject(tokener2);
             JSONArray jsonEndAssignments = object2.getJSONArray("assignments");
@@ -108,7 +108,7 @@ public class Main {
             }
         }
         frame.setVisible(true);
-        TestPane testPane = new TestPane(endAssignments,cranes,containers,slots,length,width,containerLength,containerWidth);
+        TestPane testPane = new TestPane(endAssignments,cranes,containers,slots,length,width,containerLength,containerWidth,startHeight);
         if(target){
             testPane.makeTargetHeight(targetHeight);
         }

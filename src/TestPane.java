@@ -16,15 +16,16 @@ class TestPane extends JPanel {
     List<Container>printContainers;
     List<Assignment>assignments, realAssignments;
     List<Crane>cranes;
-    int length,width,targetHeight,time=0;
+    int length,width,maxHeight,targetHeight,time=0;
     int containerX,containerY;
     private List<Slot>slots, notVisitedSlots;
     private Timer timer;
     private boolean c1 = false, c2 = false,containerAttached, heightMode, firstTime = true;
     private double[] restricted = {0,0};
     ActionListener al;
-    public TestPane(List<Assignment>assignments,List<Crane>cranes, HashMap<Integer,Container> containers,List<Slot>slots, int length, int width,int containerX,int containerY) {
+    public TestPane(List<Assignment>assignments,List<Crane>cranes, HashMap<Integer,Container> containers,List<Slot>slots, int length, int width,int containerX,int containerY,int maxHeight) {
         this.assignments = assignments;
+        this.maxHeight = maxHeight;
         this.realAssignments = new ArrayList<>();
         this.slots = slots;
         if(assignments.isEmpty()){
@@ -77,7 +78,18 @@ class TestPane extends JPanel {
                     Container container = null;
                     Assignment assignment = null;
                     if(crane.isBlocked()){
-                        crane.moveCraneOneStep();
+                        Assignment otherAssignment = null;
+                        for(Crane cr : cranes){
+                            if(cr.getId() != crane.getId()){
+                                otherAssignment = cr.getCurrentAssignment();
+                                break;
+                            }
+                        }
+                        if(otherAssignment != null){
+                            crane.moveCraneOneStep(otherAssignment);
+                            continue;
+                        }
+                        crane.moveCraneOneStep(null);
                         continue;
                     }
                     if (crane.getCurrentAssignment() == null) {
@@ -87,25 +99,29 @@ class TestPane extends JPanel {
                                 checkReady();
                             }
                             for (Assignment as : realAssignments) {
+                                if(as.getContainerId() == 66){
+                                    System.out.println();
+                                }
                                 Container c = containers.get(as.getContainerId());
                                 Slot sBegin = slots.get(c.getSlot().getId());
+                                double containerXcoord = c.getX();
                                 Slot sEnd = slots.get(as.getSlotId());
                                 if (sBegin != null) {
-                                    if(canTakeContainer(c,crane)) {
-                                        if (sEnd.getXCoordinate() <= crane.getXMax() && sEnd.getXCoordinate() >= crane.getXMin() && sBegin.getXCoordinate() <= crane.getXMax() && sBegin.getXCoordinate() >= crane.getXMin()) {
+                                    if(canTakeContainer(c,crane) && canPlaceContainer(c, sEnd.getId())) {
+                                        if (sEnd.getXCoordinate() <= crane.getXMax() && sEnd.getXCoordinate() >= crane.getXMin() && containerXcoord <= crane.getXMax() && containerXcoord >= crane.getXMin()) {
                                             crane.setCurrentAssignment(as);
                                             assignment = as;
                                             realAssignments.remove(as);
                                             break;
-                                        } else if (sBegin.getXCoordinate() <= crane.getXMax() && sBegin.getXCoordinate() >= crane.getXMin()) {
-                                            if (sBegin.getXCoordinate() < restricted[0] || sBegin.getXCoordinate() > restricted[1]) {
+                                        } else if (containerXcoord <= crane.getXMax() && containerXcoord >= crane.getXMin()) {
+                                            if (containerXcoord < restricted[0] || containerXcoord > restricted[1]) {
                                                 Assignment newAssignment = findPlaceInArea(c, crane, restricted);
                                                 crane.setCurrentAssignment(newAssignment);
                                                 assignment = newAssignment;
                                                 break;
                                             }
                                         }
-                                    }else if(!sBegin.getTopContainer().equals(c) && sBegin.getXCoordinate() <= crane.getXMax() && sBegin.getXCoordinate() >= crane.getXMin()){
+                                    }else if(!sBegin.getTopContainer().equals(c) && containerXcoord <= crane.getXMax() && containerXcoord >= crane.getXMin()){
                                         Container blockingContainer = sBegin.getTopContainer();
                                         double maxArea = crane.getXMax();
                                         if(maxArea > length-1){
@@ -116,7 +132,7 @@ class TestPane extends JPanel {
                                         Assignment ass = findPlaceInArea(blockingContainer,crane, area);
                                         crane.setCurrentAssignment(ass);
                                         assignment = ass;
-                                        realAssignments.add(1,new Assignment(blockingSlot.getId(),blockingContainer.getId(),false));
+                                        realAssignments.add(new Assignment(blockingSlot.getId(),blockingContainer.getId(),false));
                                         break;
                                     }
                                 }
@@ -326,6 +342,15 @@ class TestPane extends JPanel {
         int heigth = s.getStackSize();
         for(int i=idSlot; i<idSlot+container.getSize();i++){
             Slot sl = slots.get(i);
+            if(heightMode){
+                if(heigth +1 > targetHeight){
+                    return false;
+                }
+            }else {
+                if (heigth + 1 > maxHeight) {
+                    return false;
+                }
+            }
             if(sl.getStackSize() != heigth){
                 System.out.println("Slot "+sl.getId()+" Heeft niet juiste hoogte");
                 return false;

@@ -137,32 +137,74 @@ public class Crane {
         }
         return false;
     }
-    public void moveCraneOneStep(){
-        if(id == 1) {
-            if (hasContainer) {
-                if (container.getSize() == 1) {
-                    container.setX(x + xspeed);
-                } else if (container.getSize() == 2) {
-                    container.setX((x+xspeed) - 0.5);
-                } else if (container.getSize() == 3) {
-                    container.setX((x + xspeed) - 1);
+    public void moveCraneOneStep(Assignment otherAssignment){
+        if(otherAssignment != null) {
+            Crane otherCrane = null;
+            for(Crane cr : cranes){
+                if(id != cr.getId()){
+                    otherCrane = cr;
                 }
             }
-            x += xspeed;
+            Container otherContainer = containers.get(otherAssignment.getContainerId());
+            if (id == 1) {
+                if (hasContainer) {
+                    if (container.getSize() == 1) {
+                        container.setX(x + xspeed);
+                    } else if (container.getSize() == 2) {
+                        container.setX((x + xspeed) - 0.5);
+                    } else if (container.getSize() == 3) {
+                        container.setX((x + xspeed) - 1);
+                    }
+                }
+                x += xspeed;
+                if (x - 2 >= otherCrane.getX()) {
+                    for(Crane cr : cranes){
+                        cr.setBlocked(false);
+                    }
+                }
+            } else {
+                if (hasContainer) {
+                    if (container.getSize() == 1) {
+                        container.setX(x - xspeed);
+                    } else if (container.getSize() == 2) {
+                        container.setX((x - xspeed) - 0.5);
+                    } else if (container.getSize() == 3) {
+                        container.setX((x - xspeed) - 1);
+                    }
+                }
+                x -= xspeed;
+                if (x + 2 <= otherCrane.getX()) {
+                    for(Crane cr : cranes){
+                        cr.setBlocked(false);
+                    }
+                }
+            }
         }else{
-            if (hasContainer) {
-                if (container.getSize() == 1) {
-                    container.setX(x - xspeed);
-                } else if (container.getSize() == 2) {
-                    container.setX((x-xspeed) - 0.5);
-                } else if (container.getSize() == 3) {
-                    container.setX((x - xspeed) - 1);
+            if (id == 1) {
+                if (hasContainer) {
+                    if (container.getSize() == 1) {
+                        container.setX(x + xspeed);
+                    } else if (container.getSize() == 2) {
+                        container.setX((x + xspeed) - 0.5);
+                    } else if (container.getSize() == 3) {
+                        container.setX((x + xspeed) - 1);
+                    }
                 }
+                x += xspeed;
+                this.blocked = false;
+            } else {
+                if (hasContainer) {
+                    if (container.getSize() == 1) {
+                        container.setX(x - xspeed);
+                    } else if (container.getSize() == 2) {
+                        container.setX((x - xspeed) - 0.5);
+                    } else if (container.getSize() == 3) {
+                        container.setX((x - xspeed) - 1);
+                    }
+                }
+                x -= xspeed;
+                this.blocked = false;
             }
-            x -= xspeed;
-        }
-        if(calculateDistance(0)>1){
-            this.blocked = false;
         }
     }
     public void moveFromRestricted(){
