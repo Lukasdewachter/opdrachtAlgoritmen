@@ -10,8 +10,6 @@ import static java.lang.Thread.sleep;
 
 class TestPane extends JPanel {
     public Graphics2D g2d;
-    private Color normal, correct;
-    private Crane crane2;
     HashMap<Integer,Container> containers;
     List<Container>printContainers;
     List<Assignment>assignments, realAssignments;
@@ -177,9 +175,11 @@ class TestPane extends JPanel {
                                     }
                                     s = getSlotWithCoords((int)xCoord,0);
                                 }
-                                Assignment ass = new Assignment(s.getId(), s.getTopContainer().getId(),false);
+                                Assignment ass = new Assignment(s.getId(),-1,false);
                                 crane.setCurrentAssignment(ass);
                                 assignment = ass;
+                                crane.setCompleted(true);
+                                checkReady();
                             }
                         }
                         if(crane.getCurrentAssignment() != null ){
@@ -278,8 +278,10 @@ class TestPane extends JPanel {
         while(true) {
             Slot slot = getSlotWithCoords(x, y);
             if(slot != null) {
-                if (x >= area[0] && x <= area[1] && canPlaceContainer(container, slot.getId()) && x != originalSlot.getXCoordinate() && y != originalSlot.getYCoordinate()) {
-                    return new Assignment(slot.getId(), container.getId(), false);
+                if (x >= area[0] && x <= area[1] && canPlaceContainer(container, slot.getId())) {
+                    if(!slot.equals(originalSlot)) {
+                        return new Assignment(slot.getId(), container.getId(), false);
+                    }
                 } else {
                     if (crane != null) {
                         if (crane.getXMax() < restricted[1] + 1) {
@@ -352,6 +354,7 @@ class TestPane extends JPanel {
         for(int i=idSlot; i<idSlot+container.getSize();i++){
             Slot sl = slots.get(i);
             if(heightMode){
+                //todo: case 2mh zou c 69 naar slot 189 moeten brengen, fix het
                 if(heigth +1 > targetHeight){
                     return false;
                 }
