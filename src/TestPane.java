@@ -110,10 +110,12 @@ class TestPane extends JPanel {
                                             crane.setCurrentAssignment(as);
                                             assignment = as;
                                             as.setActive(true);
-                                            realAssignments.remove(as);
                                             break;
                                         } else if (containerXcoord <= crane.getXMax() && containerXcoord >= crane.getXMin()) {
                                             if (containerXcoord < restricted[0] || containerXcoord > restricted[1]) {
+                                                if(as.getContainerId() == 81){
+                                                    System.out.println();
+                                                }
                                                 Assignment newAssignment = findPlaceInArea(c, crane, restricted);
                                                 crane.setCurrentAssignment(newAssignment);
                                                 assignment = newAssignment;
@@ -144,13 +146,13 @@ class TestPane extends JPanel {
                             if(!notVisitedSlots.isEmpty()) {
                                 for (int i = 0; i < notVisitedSlots.size(); i++) {
                                     Slot slot = notVisitedSlots.get(i);
-                                    if (slot.getId() == 180) {
-                                        System.out.println();
-                                    }
                                     Container c = slot.getTopContainer();
                                     double[] area = new double[2];
                                     area[0] = crane.getXMin();
                                     area[1] = crane.getXMax();
+                                    if(area[1] > length-1){
+                                        area[1] = length-1;
+                                    }
                                     Slot sBegin = slots.get(c.getSlot().getId());
                                     if (sBegin.getXCoordinate() >= area[0] && sBegin.getXCoordinate() <= area[1]) {
                                         Assignment newAssignment = findPlaceInArea(c, crane, area);
@@ -188,6 +190,9 @@ class TestPane extends JPanel {
                     }else {
                         container = crane.getContainer();
                         assignment = crane.getCurrentAssignment();
+                        if(container.getId() == 81){
+                            System.out.println();
+                        }
                     }
                     if (!crane.getHasContainer() && assignment != null) {
                         if (container == null && assignment.getContainerId() != -1) {
@@ -197,7 +202,6 @@ class TestPane extends JPanel {
                             container = c;
                             crane.setContainer(false, container);
                             if (c == null) {
-                                //todo: mogelijks dit fixen voor stopcondities.
                                 crane.setCompleted(true);
                                 checkReady();
                             }
@@ -241,6 +245,7 @@ class TestPane extends JPanel {
                             }
                             if(container.getId() == assignment.getContainerId() && newSlot.getId() == assignment.getSlotId()){
                                 realAssignments.remove(assignment);
+
                             }else{
                                 assignment.setActive(false);
                             }
@@ -252,7 +257,7 @@ class TestPane extends JPanel {
                                 checkReady();
                             }
                             else{
-                                if(realAssignments.isEmpty()){
+                                if(realAssignments.isEmpty()&& !heightMode){
                                     crane.setCompleted(true);
                                     checkReady();
                                 }
@@ -274,14 +279,22 @@ class TestPane extends JPanel {
     public Assignment findPlaceInArea(Container container, Crane crane, double[] area){
         int x=container.getSlot().getXCoordinate();
         int y=container.getSlot().getYCoordinate();
+        List<Slot>containerSlots = new ArrayList<>();
+        for(int i=container.getSlot().getId(); i<container.getSlot().getId()+container.getSize(); i++){
+            containerSlots.add(slots.get(i));
+        }
         Slot originalSlot = container.getSlot();
         while(true) {
             Slot slot = getSlotWithCoords(x, y);
             if(slot != null) {
-                if (x >= area[0] && x <= area[1] && canPlaceContainer(container, slot.getId())) {
-                    if(!slot.equals(originalSlot)) {
-                        return new Assignment(slot.getId(), container.getId(), false);
+                boolean sameSlots = false;
+                for(int i=slot.getId(); i<slot.getId()+container.getSize(); i++){
+                    if(containerSlots.contains(slots.get(i))){
+                        sameSlots = true;
                     }
+                }
+                if (x >= area[0] && x <= area[1] && canPlaceContainer(container, slot.getId()) && !sameSlots) {
+                    return new Assignment(slot.getId(), container.getId(), false);
                 } else {
                     if (crane != null) {
                         if (crane.getXMax() < restricted[1] + 1) {
@@ -289,7 +302,7 @@ class TestPane extends JPanel {
                             if (x > area[1]) {
                                 x = (int) area[0];
                                 y++;
-                                if (y > width) {
+                                if (y > width-1) {
                                     y = 0;
                                 }
                             }
@@ -298,7 +311,7 @@ class TestPane extends JPanel {
                             if (x < area[0]) {
                                 x = (int) area[1];
                                 y++;
-                                if (y > width) {
+                                if (y > width-1) {
                                     y = 0;
                                 }
                             }
@@ -309,7 +322,7 @@ class TestPane extends JPanel {
                             if (x > area[1]) {
                                 x = (int) area[0];
                                 y++;
-                                if (y > width) {
+                                if (y > width-1) {
                                     y = 0;
                                 }
                             }
@@ -318,7 +331,7 @@ class TestPane extends JPanel {
                             if (x < area[0]) {
                                 x = (int) area[1];
                                 y++;
-                                if (y > width) {
+                                if (y > width-1) {
                                     y = 0;
                                 }
                             }
@@ -354,7 +367,6 @@ class TestPane extends JPanel {
         for(int i=idSlot; i<idSlot+container.getSize();i++){
             Slot sl = slots.get(i);
             if(heightMode){
-                //todo: case 2mh zou c 69 naar slot 189 moeten brengen, fix het
                 if(heigth +1 > targetHeight){
                     return false;
                 }
