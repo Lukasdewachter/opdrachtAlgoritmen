@@ -11,6 +11,7 @@ import static java.lang.Thread.sleep;
 class TestPane extends JPanel {
     public Graphics2D g2d;
     HashMap<Integer,Container> containers;
+    HashMap<Integer,List<Slot>>heightMap;
     List<Container>printContainers;
     List<Assignment>assignments, realAssignments;
     List<Crane>cranes;
@@ -26,6 +27,10 @@ class TestPane extends JPanel {
         this.maxHeight = maxHeight;
         this.realAssignments = new ArrayList<>();
         this.slots = slots;
+        this.heightMap = new HashMap<>();
+        for(int i=0; i<maxHeight;i++){
+            heightMap.put(i,new ArrayList<>());
+        }
         if(assignments.isEmpty()){
             this.heightMode = true;
             this.targetHeight = 0;
@@ -73,6 +78,7 @@ class TestPane extends JPanel {
                     throw new RuntimeException(ex);
                 }
                 for (Crane crane : cranes) {
+                    //todo: bij mh4 loopt die na een tijd vast omdat hij niks meer kan plaatsen, dit moet opgelost worden, maybe not scheduled eens sorteren ofzo
                     Container container = null;
                     Assignment assignment = null;
                     if(crane.isBlocked()){
@@ -113,9 +119,6 @@ class TestPane extends JPanel {
                                             break;
                                         } else if (containerXcoord <= crane.getXMax() && containerXcoord >= crane.getXMin()) {
                                             if (containerXcoord < restricted[0] || containerXcoord > restricted[1]) {
-                                                if(as.getContainerId() == 81){
-                                                    System.out.println();
-                                                }
                                                 Assignment newAssignment = findPlaceInArea(c, crane, restricted);
                                                 crane.setCurrentAssignment(newAssignment);
                                                 assignment = newAssignment;
@@ -155,10 +158,33 @@ class TestPane extends JPanel {
                                     }
                                     Slot sBegin = slots.get(c.getSlot().getId());
                                     if (sBegin.getXCoordinate() >= area[0] && sBegin.getXCoordinate() <= area[1]) {
-                                        Assignment newAssignment = findPlaceInArea(c, crane, area);
-                                        crane.setCurrentAssignment(newAssignment);
-                                        assignment = newAssignment;
-                                        notVisitedSlots.remove(slot);
+                                        Assignment newAssignment = findPlaceInAreaForHeight(c, crane, area);
+                                        if(newAssignment == null){
+                                            Assignment tempAssignment = null;
+                                            Random r = new Random();
+                                            while(true){
+                                                Container newContainer = containers.get(r.nextInt(containers.size()-1));
+                                                if(!newContainer.isTop()){
+                                                    continue;
+                                                }
+                                                double newX = newContainer.getX();
+                                                if(newX<= area[1] && newX>=area[0]&& canTakeContainer(newContainer,crane)){
+                                                    tempAssignment = findPlaceInAreaForHeight(newContainer,crane,area);
+                                                    if(tempAssignment != null){
+                                                        assignment = tempAssignment;
+                                                        crane.setCurrentAssignment(tempAssignment);
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }else {
+                                            crane.setCurrentAssignment(newAssignment);
+                                            assignment = newAssignment;
+                                            notVisitedSlots.remove(slot);
+                                        }
+                                        for(int j = assignment.getSlotId(); j<assignment.getSlotId() + containers.get(assignment.getContainerId()).getSize();j++){
+                                            slots.get(j).setActive(true);
+                                        }
                                         break;
                                     }
                                 }
@@ -190,15 +216,10 @@ class TestPane extends JPanel {
                     }else {
                         container = crane.getContainer();
                         assignment = crane.getCurrentAssignment();
-                        if(container.getId() == 81){
-                            System.out.println();
-                        }
                     }
                     if (!crane.getHasContainer() && assignment != null) {
                         if (container == null && assignment.getContainerId() != -1) {
                             Container c = containers.get(assignment.getContainerId());
-                            Slot containerSlot = c.getSlot();
-                            Slot endSlot = slots.get(assignment.getSlotId());
                             container = c;
                             crane.setContainer(false, container);
                             if (c == null) {
@@ -241,7 +262,10 @@ class TestPane extends JPanel {
                             Slot newSlot = slots.get(crane.getCurrentAssignment().getSlotId());
                             container.setSlot(newSlot);
                             for (int i = newSlot.getId(); i < newSlot.getId() + container.getSize(); i++) {
-                                slots.get(i).addContainer(container);
+                                Slot s = slots.get(i);
+                                s.addContainer(container);
+                                s.setActive(false);
+
                             }
                             if(container.getId() == assignment.getContainerId() && newSlot.getId() == assignment.getSlotId()){
                                 realAssignments.remove(assignment);
@@ -275,7 +299,37 @@ class TestPane extends JPanel {
         };
         timer = new Timer(10,al);
     }
-
+    public Assignment findPlaceInAreaForHeight(Container container, Crane crane, double[] area){
+        List<Slot>containerSlots = new ArrayList<>();
+        for(int i=container.getSlot().getId(); i<container.getSlot().getId()+container.getSize(); i++){
+            containerSlots.add(slots.get(i));
+        }
+        for(int i=0; i<targetHeight+1;i++){
+            List<Slot>slotsAtHeight = heightMap.get(i);
+            if(slotsAtHeight != null){
+                for(Slot slot : slotsAtHeight){
+                    if(slot.isActive()){
+                        continue;
+                    }
+                    boolean sameSlots = false;
+                    for(int j=slot.getId(); j<slot.getId()+container.getSize(); j++){
+                        if( j>=slots.size()){
+                            sameSlots = true;
+                        }
+                        else if(containerSlots.contains(slots.get(j))){
+                            sameSlots = true;
+                        }
+                    }
+                    int xCoordinate = slot.getXCoordinate();
+                    int slotId = slot.getId();
+                    if(xCoordinate >= area[0] && xCoordinate <= area[1] && canPlaceContainer(container,slot.getId()) && !sameSlots){
+                        return new Assignment(slotId, container.getId(), false);
+                    }
+                }
+            }
+        }
+        return null;
+    }
     public Assignment findPlaceInArea(Container container, Crane crane, double[] area){
         int x=container.getSlot().getXCoordinate();
         int y=container.getSlot().getYCoordinate();
@@ -356,8 +410,17 @@ class TestPane extends JPanel {
             if(slot.getStackSize() > targetHeight && slot.getTopContainer().getId() != lastContainerId){
                 notVisitedSlots.add(slot);
                 lastContainerId = slot.getTopContainer().getId();
+            }else if(slot.getStackSize()<=targetHeight){
+                int slotHeight = slot.getStackSize();
+                List<Slot>slotList = heightMap.get(slotHeight);
+                if(slotList == null){
+                    System.out.println();
+                }
+                slotList.add(slot);
+                heightMap.replace(slotHeight,slotList);
             }
         }
+        Collections.sort(notVisitedSlots,Comparator.comparing(Slot::getTopContainerLength));
     }
     public boolean canPlaceContainer(Container container, int endSlotId){
         Slot s =  slots.get(endSlotId);

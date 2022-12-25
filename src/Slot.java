@@ -6,6 +6,7 @@ public class Slot {
     private Stack<Container> containerStack;
     private final int maxHeight;
     private int containerX,containerY;
+    private boolean active;
 
     public Slot(int id, int xCoordinate, int yCoordinate, int maxHeight, int containerX,int containerY) {
         this.id = id;
@@ -14,6 +15,7 @@ public class Slot {
         this.maxHeight = maxHeight;
         this.containerX = containerX;
         this.containerY = containerY;
+        this.active = false;
         containerStack = new Stack<>();
     }
     //container toevoegen aan slot
@@ -51,6 +53,15 @@ public class Slot {
         }
         return true;
     }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
     //kijken welke container van boven zit
     public Container getTopContainer() {
         if (!containerStack.isEmpty()) {
