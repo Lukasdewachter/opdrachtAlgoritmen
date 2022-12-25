@@ -60,6 +60,7 @@ public class Crane {
     }
 
     public boolean moveCrane(){
+        //calculates distance between cranes also using the move it wants to make
         double distance=calculateDistance(0);
         if(distance>1){
             this.blocked = false;

@@ -342,6 +342,7 @@ class TestPane extends JPanel {
                         continue;
                     }
                     boolean sameSlots = false;
+                    //check if these slots are different than the current occupied slots
                     for(int j=slot.getId(); j<slot.getId()+container.getSize(); j++){
                         if( j>=slots.size()){
                             sameSlots = true;
@@ -352,6 +353,7 @@ class TestPane extends JPanel {
                     }
                     int xCoordinate = slot.getXCoordinate();
                     int slotId = slot.getId();
+                    //is this slot feaible
                     if(xCoordinate >= area[0] && xCoordinate <= area[1] && canPlaceContainer(container,slot.getId()) && !sameSlots){
                         return new Assignment(slotId, container.getId(), false);
                     }
@@ -364,10 +366,10 @@ class TestPane extends JPanel {
         int x=container.getSlot().getXCoordinate();
         int y=container.getSlot().getYCoordinate();
         List<Slot>containerSlots = new ArrayList<>();
+        //check feasible
         for(int i=container.getSlot().getId(); i<container.getSlot().getId()+container.getSize(); i++){
             containerSlots.add(slots.get(i));
         }
-        Slot originalSlot = container.getSlot();
         while(true) {
             Slot slot = getSlotWithCoords(x, y);
             if(slot != null) {
@@ -376,6 +378,7 @@ class TestPane extends JPanel {
                     if(i >= slots.size()){
                         sameSlots = true;
                     }
+                    //check if these slots are different than occupied slots
                     else if(containerSlots.contains(slots.get(i))){
                         sameSlots = true;
                     }
@@ -384,6 +387,7 @@ class TestPane extends JPanel {
                     return new Assignment(slot.getId(), container.getId(), false);
                 } else {
                     if (crane != null) {
+                        //If the slot isn't good we move one spot in x or y direction to look for local available slots
                         if (crane.getXMax() < restricted[1] + 1) {
                             x++;
                             if (x > area[1]) {
@@ -457,6 +461,7 @@ class TestPane extends JPanel {
         int idSlot = s.getId();
         int yCoordinate = s.getYCoordinate();
         int heigth = s.getStackSize();
+        //check all stacking constraints
         for(int i=idSlot; i<idSlot+container.getSize();i++){
             if(i >= slots.size()){
                 return false;
@@ -482,6 +487,7 @@ class TestPane extends JPanel {
             if(sl.getYCoordinate() != yCoordinate){
                 return false;
             }
+            //if height needs to be lowered extra check needs to be done
             if(heightMode){
                 if(sl.getStackSize()+1 > targetHeight){
                     return false;
@@ -496,6 +502,7 @@ class TestPane extends JPanel {
             int idSlot = s.getId();
             int yCoordinate = s.getYCoordinate();
             int heigth = s.getStackSize();
+            //fealibility checks
             for (int i = idSlot; i < idSlot + container.getSize(); i++) {
                 Slot sl = slots.get(i);
                 if (s.getTopContainer() != null) {
