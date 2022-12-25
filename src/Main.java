@@ -15,10 +15,13 @@ import java.util.List;
 */
 public class Main {
     public static void main(String[] args) throws Exception {
+        System.out.println("Enter the desired testcase (from 1-10)");
         Scanner sc = new Scanner(System.in);
         String[] inputTerminals = {"./input/1t/TerminalA_20_10_3_2_100.json","./input/2mh/MH2Terminal_20_10_3_2_100.json","./input/3t/TerminalA_20_10_3_2_160.json","./input/4mh/MH2Terminal_20_10_3_2_160.json","./input/5t/TerminalB_20_10_3_2_160.json","./input/6t/Terminal_10_10_3_1_100.json","./input/7t/TerminalC_10_10_3_2_80.json","./input/8t/TerminalC_10_10_3_2_80.json","./input/9t/TerminalC_10_10_3_2_100.json","./input/10t/TerminalC_10_10_3_2_100.json"};
         String[] inputTargetTerminals = {"./input/1t/targetTerminalA_20_10_3_2_100.json","","./input/3t/targetTerminalA_20_10_3_2_160.json","","./input/5t/targetTerminalB_20_10_3_2_160.json","./input/6t/targetTerminal_10_10_3_1_100.json","./input/7t/targetTerminalC_10_10_3_2_80.json","./input/8t/targetTerminalC_10_10_3_2_80.json","./input/9t/targetTerminalC_10_10_3_2_100.json","./input/10t/targetTerminalC_10_10_3_2_100.json"};
         int input = sc.nextInt() -1;
+        System.out.println("Enter the duration of a timeunit in ms(positive number)");
+        int timeDelay = sc.nextInt();
         boolean target = true;
         if(input == 0 || input == 2 || input == 4 || input == 5 || input == 6 || input == 7 || input == 8 || input == 9){
             target = false;
@@ -114,7 +117,7 @@ public class Main {
             }
         }
         frame.setVisible(true);
-        TestPane testPane = new TestPane(endAssignments,cranes,containers,slots,length,width,containerLength,containerWidth,startHeight);
+        TestPane testPane = new TestPane(endAssignments,cranes,containers,slots,length,width,containerLength,containerWidth,startHeight,timeDelay);
         if(target){
             testPane.makeTargetHeight(targetHeight);
         }

@@ -27,10 +27,6 @@ public class Slot {
         }
         container.setIsTop(true);
         container.setZCoordinate(containerStack.size() + 1);
-        System.out.println("pushed "+container.getId()+" onto slot "+id);
-        if(container.getId()==96){
-            System.out.println();
-        }
         containerStack.push(container);
     }
     //container verwijderen van slot

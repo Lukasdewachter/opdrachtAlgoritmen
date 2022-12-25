@@ -19,7 +19,7 @@ class TestPane extends JPanel {
     List<Container>printContainers;
     List<Assignment>assignments, realAssignments;
     List<Crane>cranes;
-    int length,width,maxHeight,targetHeight,time=0;
+    int length,width,maxHeight,targetHeight,time=0,timeDelay;
     int containerX,containerY;
     private List<Slot>slots, notVisitedSlots;
     private Timer timer;
@@ -27,12 +27,13 @@ class TestPane extends JPanel {
     private double[] restricted = {0,0};
     File outputFile;
     ActionListener al;
-    public TestPane(List<Assignment>assignments,List<Crane>cranes, HashMap<Integer,Container> containers,List<Slot>slots, int length, int width,int containerX,int containerY,int maxHeight) {
+    public TestPane(List<Assignment>assignments,List<Crane>cranes, HashMap<Integer,Container> containers,List<Slot>slots, int length, int width,int containerX,int containerY,int maxHeight,int timeDelay) {
         this.assignments = assignments;
         this.outputFile =  new File("./output/output.txt");
         this.maxHeight = maxHeight;
         this.realAssignments = new ArrayList<>();
         this.slots = slots;
+        this.timeDelay = timeDelay;
         this.heightMap = new HashMap<>();
         for(int i=0; i<maxHeight;i++){
             heightMap.put(i,new ArrayList<>());
@@ -75,16 +76,15 @@ class TestPane extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     if (firstTime) {
-                        sleep(5000);
+                        sleep(2000);
                         firstTime = false;
                     } else {
-                        sleep(500);
+                        sleep(timeDelay);
                     }
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
                 for (Crane crane : cranes) {
-                    //todo: bij mh4 loopt die na een tijd vast omdat hij niks meer kan plaatsen, dit moet opgelost worden, maybe not scheduled eens sorteren ofzo
                     Container container = null;
                     Assignment assignment = null;
                     if(crane.isBlocked()){
@@ -446,9 +446,6 @@ class TestPane extends JPanel {
             }else if(slot.getStackSize()<=targetHeight){
                 int slotHeight = slot.getStackSize();
                 List<Slot>slotList = heightMap.get(slotHeight);
-                if(slotList == null){
-                    System.out.println();
-                }
                 slotList.add(slot);
                 heightMap.replace(slotHeight,slotList);
             }
@@ -475,17 +472,14 @@ class TestPane extends JPanel {
                 }
             }
             if(sl.getStackSize() != heigth){
-                System.out.println("Slot "+sl.getId()+" Heeft niet juiste hoogte");
                 return false;
             }
             if(sl.hasContainers()) {
                 if (sl.getTopContainer().getSize() > container.getSize()) {
-                    System.out.println("Bovenste Container is te groot");
                     return false;
                 }
             }
             if(sl.getYCoordinate() != yCoordinate){
-                System.out.println("Slot "+sl.getId()+" Heeft niet juiste y coordinaat");
                 return false;
             }
             if(heightMode){
@@ -510,7 +504,6 @@ class TestPane extends JPanel {
                     }
                 }
                 if (sl.getYCoordinate() != yCoordinate) {
-                    System.out.println("Slot " + sl.getId() + " Heeft niet juiste y coordinaat");
                     return false;
                 }
             }
@@ -541,7 +534,7 @@ class TestPane extends JPanel {
                     }
                 }
                 if (realAssignments.isEmpty() && correct) {
-                    System.out.println("deze ordening klopt!");
+                    System.out.println("Correct order");
                     timer.stop();
                 }
             }else{
@@ -550,8 +543,10 @@ class TestPane extends JPanel {
                         correct = false;
                     }
                 }
-                System.out.println("De max hoogte is correct verlaagd");
-                timer.stop();
+                if(correct) {
+                    System.out.println("Correct new height");
+                    timer.stop();
+                }
             }
             if(correct){
                 FileWriter writer = new FileWriter("./output/output.txt");
@@ -563,6 +558,12 @@ class TestPane extends JPanel {
                     }
                 }
                 writer.close();
+                try {
+                    sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                System.exit(0);
             }
         }
     }
