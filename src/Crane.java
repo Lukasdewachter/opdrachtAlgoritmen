@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.geom.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,10 +10,12 @@ public class Crane {
     private int width, length, id,containerX,containerY;
     private double  x,y,xmin, xmax, xspeed,yspeed,ymin,ymax,xEnd,yEnd;
     private double [] restricted;
+    private String currentMove;
     Color body, head;
     Assignment currentAssignment;
     List<Slot> slots;
     HashMap<Integer,Container> containers;
+    List<String>moves;
     List<Crane>cranes;
 
     public Crane(int length, int width, double x, double y, double ymin, double ymax,int id,double xspeed,double yspeed,double xmin,double xmax, int containerX, int containerY, List<Slot> slots,HashMap<Integer,Container>containers){
@@ -38,7 +41,9 @@ public class Crane {
         this.yEnd =0;
         this.cranes=null;
         this.restricted = null;
+        this.currentMove =null;
         this.blocked = false;
+        this.moves = new ArrayList<>();
         body = new Color(109, 128, 161);
         head = new Color(100,149,237);
     }
@@ -207,18 +212,18 @@ public class Crane {
             }
         }
     }
-    public void moveFromRestricted(){
+    public void moveFromRestricted(int time){
         setBlocked(false);
         if(id ==0){
             for(Slot s : slots){
                 if(s.getXCoordinate() == restricted[0]-2 && s.getYCoordinate() == y){
-                    setCurrentAssignment(new Assignment(s.getId(),-1,false));
+                    setCurrentAssignment(new Assignment(s.getId(),-1,false),time);
                 }
             }
         }else if(id ==1){
             for(Slot s : slots){
                 if(s.getXCoordinate() == restricted[1]+2 && s.getYCoordinate() == y){
-                    setCurrentAssignment(new Assignment(s.getId(),-1,false));
+                    setCurrentAssignment(new Assignment(s.getId(),-1,false),time);
                     break;
                 }
             }
@@ -256,21 +261,27 @@ public class Crane {
     public int getId(){
         return this.id;
     }
-    public void setCurrentAssignment(Assignment currentAssignment) {
+    public void setCurrentAssignment(Assignment currentAssignment,int time) {
         this.currentAssignment = currentAssignment;
         if (currentAssignment != null) {
             if (!hasContainer) {
-                if( currentAssignment.getContainerId() != -1) {
+                if (currentAssignment.getContainerId() != -1) {
                     Container c = containers.get(currentAssignment.getContainerId());
+                    currentMove = id + ";" + currentAssignment.getContainerId() + ";" + c.getX() + ";" + c.getY();
                     setXEnd(c.getX());
                     setYEnd(c.getY());
-                }else{
+                } else {
+                    Slot s = slots.get(currentAssignment.getSlotId());
+                    currentMove = id + "; ;" + s.getXCoordinate() + ";" + s.getYCoordinate();
                     setXEnd(slots.get(currentAssignment.getSlotId()).getXCoordinate());
                     setYEnd(slots.get(currentAssignment.getSlotId()).getYCoordinate());
                 }
             } else {
                 System.out.println("heeft al container");
             }
+        } else {
+            currentMove = currentMove + ";" + x + ";" + y + ";" + time;
+            moves.add(currentMove);
         }
     }
     public Assignment getCurrentAssignment() {
@@ -286,7 +297,7 @@ public class Crane {
     public void setRestricted(double[] restricted){
         this.restricted = restricted;
     }
-    public void setHasContainer(boolean hasContainer) {
+    public void setHasContainer(boolean hasContainer,int time) {
         double tempx = slots.get(currentAssignment.getSlotId()).getXCoordinate();
         double tempy = slots.get(currentAssignment.getSlotId()).getYCoordinate();
         if(container.getSize()==2){
@@ -298,6 +309,9 @@ public class Crane {
         setXEnd(tempx);
         setYEnd(tempy);
         this.hasContainer = hasContainer;
+        if(hasContainer) {
+            currentMove = currentMove + ";" + time;
+        }
     }
 
     public void setWidth(int width) {
@@ -344,6 +358,12 @@ public class Crane {
         this.length = length;
     }
 
+    public List<String> getMoves() {
+        return moves;
+    }
+    public void addMove(String move){
+        moves.add(move);
+    }
     public void drawCrane(Graphics2D g2d){
         double newX = (50+(containerX*0.2)/2)+((x)*containerX);
         double newY = 50+((y)*containerY);
