@@ -378,7 +378,6 @@ public class Crane {
             g2d.drawString("Crane " + (id + 1) + ": " + Double.toString(x) + " Y: " + Double.toString(y) + "        Assignment: " + Integer.toString(currentAssignment.getContainerId()) + " to slot " + Integer.toString(currentAssignment.getSlotId()), 100 + 500 * id, 30);
         }
         g2d.setColor(Color.RED);
-        //todo: juist maken
         Rectangle2D.Double maxRect = new Rectangle2D.Double(50+(containerX*xmin),50+(containerY*ymin),(containerX*((xmax+1)-xmin)),(containerY*(ymax-ymin)));
         g2d.draw(maxRect);
     }

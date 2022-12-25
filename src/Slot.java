@@ -20,7 +20,6 @@ public class Slot {
     }
     //container toevoegen aan slot
     public void addContainer(Container container) {
-        //TODO : find out why random slots keep stacking
         if (!containerStack.isEmpty()) {
             // The java.util.Stack.peek() method in Java is used to retrieve or fetch the first element of the Stack or the element present at the top of the Stack. The element retrieved does not get deleted or removed from the Stack.
             containerStack.peek().setIsTop(false);

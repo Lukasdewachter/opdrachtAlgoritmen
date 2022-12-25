@@ -60,7 +60,6 @@ public class Main {
             JSONObject o = jsonContainers.getJSONObject(i);
             int id = o.getInt("id");
             int clength = o.getInt("length");
-            //TODO : als lengte >1 moeten bij aansluitende slots container ook op stack
             Container container = new Container(id, clength, color, containerLength, containerWidth);
             containers.put(id, container);
         }
