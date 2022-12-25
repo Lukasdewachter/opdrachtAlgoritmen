@@ -353,7 +353,7 @@ class TestPane extends JPanel {
                     }
                     int xCoordinate = slot.getXCoordinate();
                     int slotId = slot.getId();
-                    //is this slot feaible
+                    //is this slot feasible
                     if(xCoordinate >= area[0] && xCoordinate <= area[1] && canPlaceContainer(container,slot.getId()) && !sameSlots){
                         return new Assignment(slotId, container.getId(), false);
                     }
@@ -502,7 +502,7 @@ class TestPane extends JPanel {
             int idSlot = s.getId();
             int yCoordinate = s.getYCoordinate();
             int heigth = s.getStackSize();
-            //fealibility checks
+            //feasibility checks
             for (int i = idSlot; i < idSlot + container.getSize(); i++) {
                 Slot sl = slots.get(i);
                 if (s.getTopContainer() != null) {
